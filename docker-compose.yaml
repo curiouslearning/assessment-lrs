@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  main:
+    depends_on:
+      - db
+    build: .
+    image: education-lrs
+    environment:
+      DATABASE_URL: postgresql://test-user:test-pass@db:5432/test-db
+    command: |
+      bash -c '
+        echo "Running tests..."
+        npm install
+        npm run migrate
+        if [ "${IS_CI}" = "" ]
+        then
+          npm test
+        else
+          npm run test-ci
+        fi
+      '
+    volumes:
+      - ./:/app
+  db:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: test-user
+      POSTGRES_PASSWORD: test-pass
+      postgres_DB: test-db

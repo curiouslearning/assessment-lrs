@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Statement {
+  id            String @id @unique @default(cuid())
+  actorId       String
+  actorType     ObjectType?
+  verbId        String
+  objectId      String
+  objectType    ObjectType?
+  timestamp     DateTime?
+  stored        DateTime @default(now())
+  version       String @default("1.0.0")
+  statement     Json
+  attachments   Json?
+}
+
+enum ObjectType {
+  Agent
+  Group
+  Activity
+  StatementRef
+  SubStatement
+}
+
+model AgentProfile {
+  id            String @id
+  objectType    ObjectType?
+  account       AgentAccount?
+  mbox          String?
+  mbox_sha1sum  String?
+  openid        String?
+}
+
+model AgentAccount {
+  agent     AgentProfile @relation(references: [id], fields: [agentId])
+  agentId   String
+  homePage  String
+  name      String
+  @@id([homePage, name])
+}
+
+model ActivityProfile {
+  objectType              ObjectType?
+  id                      String @id
+  name                    Json
+  description             Json
+  type                    String?
+  interactionType         String?
+  correctResponsesPattern String[]
+  choices                 String[]
+  scale                   String[]
+  source                  String[]
+  target                  String[]
+  steps                   String[]
+  moreinfo                String?
+  extensions              Json
+}
