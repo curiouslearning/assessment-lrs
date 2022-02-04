@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  main:
+    depends_on:
+      - mongo
+    build: .
+    image: education-lrs
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/local
+    command: |
+      sh -c '
+        echo "Running tests..."
+        npm install
+        if [ "${IS_CI}" = "" ]
+        then
+          npm test
+        fi
+        npm run test-ci
+      '
+    volumes:
+      - ./:/app
+  mongo:
+    image: mongo:latest
+    ports:
+      - 27017:27017
