@@ -3,24 +3,32 @@ version: '3'
 services:
   main:
     depends_on:
-      - mongo
+      - db
     build: .
     image: education-lrs
     environment:
-      MONGODB_URI: mongodb://mongo:27017/local
+      DATABASE_URL: ${DATABASE_URL}
     command: |
-      sh -c '
+      bash -c '
         echo "Running tests..."
         npm install
+        npm run migrate:test
         if [ "${IS_CI}" = "" ]
         then
           npm test
+        else
+          npm run test-ci
         fi
-        npm run test-ci
       '
     volumes:
       - ./:/app
-  mongo:
-    image: mongo:latest
+  db:
+    image: postgres:14
+    container_name: integration-tests-prisma
+    restart: always
     ports:
-      - 27017:27017
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      postgres_DB: tests

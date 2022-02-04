@@ -3,7 +3,8 @@ import deepEqual from "deep-equal";
 import type { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "../../helpers/api/api-handler";
 import middleware, { Next } from "../../helpers/api/request-sanitizers";
-import dbClient from "/app/lib/db";
+import dbClient from "../../../../lib/db";
+import { Prisma } from "@prisma/client";
 
 const helpers = middleware();
 enum FormatTypes {
@@ -46,6 +47,7 @@ async function runMiddleware(
 ): void {
   return new Promise((resolve, reject) => {
     fn(req, res, (result) => {
+      console.log(result);
       if (result instanceof Error) {
         return reject(result);
       }
@@ -59,27 +61,20 @@ async function runMiddleware(
 async function handleGET(req: NextRequest, res: NextResponse): void {
   try {
     // await runMiddleware(req, res, sanitizeQueryParams);
-    // await runMiddleware(req, res, validateQueryParams);
     // await runMiddleware(req, res, cors);
-    await dbClient.connect();
+    helpers.validateQueryParams(req, res, (err) => {if (err) throw err});
     const queryOptions = generateQueryParams(req.query);
     const rows = await dbClient
-      .db("xAPI")
-      .collection("statements")
-      .find(queryOptions.params)
-      .sort(queryOptions.sort)
-      .toArray();
-    rows.forEach((row) => {
-      delete row["_id"]; //_id is a mongoDB parameter outside the scope of xAPI
-    });
+      .statement
+      .findMany();
+    const statements = rows.map((row) => row.statement);
     res.status(200).json({
-      statements: rows,
+      statements: statements,
       more: "",
     });
   } catch (err) {
     throw err;
   } finally {
-    await dbClient.close();
   }
 }
 
@@ -157,70 +152,83 @@ async function handlePOST(req: NextRequest, res: NextResponse): void {
     res.status(200).end();
   }
   try {
-    await dbClient.connect();
     helpers.sanitizeBody(req, res, (err) => {
       throw err;
     });
-    let body = req.body.data;
-    body.forEach((statement) => {
-      statement["stored"] = new Date(Date.now()).toISOString();
-      if (!statement.timestamp) {
-        statement["timestamp"] = statement.stored;
+    let body = req.body;
+
+    //elevate indexable fields for DB storage
+    let rows = body.map((statement) => {
+      const {
+        actor,
+        verb,
+        object,
+        timestamp,
+        attachments
+      } = statement
+      const row = {
+        id: statement.id? statement.id: "",
+        actorId: helpers.getIRI(actor),
+        actorType: actor.objectType? actor.objectType: "Agent",
+        verbId: verb.id,
+        objectId: object.id? object.id: helpers.getIRI(object),
+        objectType: object.objectType? object.objectType: "Activity",
+        timestamp: timestamp,
+        stored: new Date(Date.now()).toISOString(),
+        statement: statement
       }
+      row.statement['stored'] = row.stored;
+      return row;
     });
-    body = helpers.createStatementID(body, res, (err) => {
+
+    rows = helpers.createStatementID(rows, res, (err) => {
       throw err;
     });
-    req.body.data = body;
-    const ids = body.map((statement) => statement.id);
-    let result;
-    if (body.length > 1) {
-      result = await dbClient
-        .db("xAPI")
-        .collection("statements")
-        .insertMany(body);
-    } else {
-      result = await dbClient
-        .db("xAPI")
-        .collection("statements")
-        .insertOne(body[0]);
-    }
-    if (result.insertedCount == 0) {
-      throw "failed to record statement";
-    }
+    req['rows'] = rows;
+    const inserts = await dbClient.$transaction(
+      rows.map((row) => dbClient.statement.create({data: row}))
+    );
+    const ids = inserts.map((statement) => statement.id);
     res.status(200).send(ids);
   } catch (err) {
-    if (err.name === "MongoServerError") {
-      if (err.code === 11000) {
-        return await runDupeCheck(req, res, err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if(err.code === 'P2002') {
+        return await runDupeCheck(req, res, err)
       }
     }
     throw err;
   } finally {
-    await dbClient.close();
   }
 }
 async function runDupeCheck(req, res, err) {
-  const original = await dbClient
-    .db("xAPI")
-    .collection("statements")
-    .find(err.keyValue)
-    .toArray();
-  const conflict = req.body.data.find(
-    (element) => element._id === err.keyValue._id
-  );
-  delete original[0]["stored"];
-  delete conflict["stored"];
-  if (deepEqual(original[0], conflict)) {
-    return res.status(204).end();
-  } else {
-    return res
-      .status(409)
-      .send(
-        `a conflicting statement with id ${conflict._id} already exists in the database`
+  const requestIds = req.rows.map((element) => element.id);
+  const dupes = await dbClient
+    .statement
+    .findMany({select: {statement: true}, where: {id:{ in: requestIds}}})
+  const conflicts = dupes.map((dupe) => {
+    const conflict = req.rows.find((elem) => elem.statement.id === dupe.statement.id);
+    if(conflict){
+      return {original: dupe.statement, conflict: conflict.statement};
+    }
+  });
+  let conflictIds = [];
+  conflicts.forEach((pair) => {
+    delete pair.original["stored"];
+    delete pair.conflict["stored"];
+    if (!deepEqual(pair.original, pair.conflict)) {
+      conflictIds.push(pair.original.id);
+    }
+  });
+  if(conflictIds.length > 0) {
+      return res
+        .status(409)
+        .send(
+          `conflicting statement(s) with id(s) ${conflictIds} already in database`
       );
   }
+  return res.status(204).send('insert did not complete, 1 or more duplicate records');
 }
+
 async function handlePUT(req: NextRequest, res: NextResponse): void {
   return res.status(500).send("I'm not implemented yet!");
 }

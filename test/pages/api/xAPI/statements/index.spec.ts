@@ -3,18 +3,19 @@ import {
   singleStatement,
   statementCollection,
 } from "../../../fixtures.json";
-import dbClient from "/app/lib/db";
-import handlers from "/app/pages/api/xAPI/statements/index";
-import { testServer } from "/app/test/server";
+import dbClient from "../../../../../lib/db";
+import handlers from "../../../../../pages/api/xAPI/statements/index";
+import { testServer } from "../../../../server";
 
 const usr = "test-user";
 const pw = "test-password";
 
 beforeEach(async () => {
   // reset db
-  await dbClient.connect();
-  await dbClient.db("xAPI").dropDatabase();
-  await dbClient.close();
+  await dbClient.agentAccount.deleteMany({});
+  await dbClient.activityProfile.deleteMany({});
+  await dbClient.agentProfile.deleteMany({});
+  await dbClient.statement.deleteMany({});
 });
 
 describe("[POST] /pages/xAPI/statements", () => {
@@ -22,11 +23,11 @@ describe("[POST] /pages/xAPI/statements", () => {
     await testServer(handlers).get("/").expect(404);
   });
 
-  it("returns 200 ok and the array of statements", async () => {
+  it("returns 200 ok and the array of statement IDs", async () => {
     await testServer(handlers)
       .post("/")
       .auth(usr, pw)
-      .send({ data: statementCollection.statements })
+      .send(statementCollection.statements)
       .expect("content-type", "application/json; charset=utf-8")
       .expect(200);
   });
@@ -35,13 +36,13 @@ describe("[POST] /pages/xAPI/statements", () => {
     await testServer(handlers)
       .post("/")
       .auth(usr, pw)
-      .send({ data: singleStatement.statement })
+      .send(singleStatement.statement)
       .expect(200);
 
     await testServer(handlers)
       .post("/")
       .auth(usr, pw)
-      .send({ data: singleStatement.statement })
+      .send(singleStatement.statement)
       .expect(204);
   });
 
@@ -49,13 +50,13 @@ describe("[POST] /pages/xAPI/statements", () => {
     await testServer(handlers)
       .post("/")
       .auth(usr, pw)
-      .send({ data: singleStatement.statement })
+      .send(singleStatement.statement)
       .expect(200);
 
     await testServer(handlers)
       .post("/")
       .auth(usr, pw)
-      .send({ data: singleStatement.conflict })
+      .send(singleStatement.conflict)
       .expect(409);
   });
 
@@ -64,19 +65,29 @@ describe("[POST] /pages/xAPI/statements", () => {
     await testServer(handlers)
       .post("/")
       .auth(usr, pw)
-      .send({ data: illegalStatementCollection.statements })
+      .send(illegalStatementCollection.statements)
       .expect("content-type", "application/json; charset=utf-8")
       .expect(400);
   });
 });
 
 describe("[GET] /pages/api/statements", () => {
-  it.skip("returns 200 and a list of statements", async () => {
+  it("returns 200 and a list of statements", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements);
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
       .expect("Content-Type", /json/)
       .expect(200)
+      .expect((res) => {
+        delete res.body.statements[0]['stored'];
+        delete res.body.statements[1]['id'];
+        delete res.body.statements[1]['stored'];
+        delete res.body.statements[2]['stored'];
+      })
       .expect({
         statements: statementCollection.statements,
         more: "",
@@ -95,7 +106,7 @@ describe("[GET] /pages/api/statements", () => {
       });
   });
 
-  it.skip("returns 400 when statementId and voidedStatementId are specified", async () => {
+  it("returns 400 when statementId and voidedStatementId are specified", async () => {
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
@@ -103,11 +114,11 @@ describe("[GET] /pages/api/statements", () => {
       .expect(400);
   });
 
-  it.skip("returns 400 when (voided) statemenId is passed with illegal params", async () => {
+  it("returns 400 when (voided) statemenId is passed with illegal params", async () => {
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
-      .query({ statementId: "statement", verb: "adlnet.gov/expapi/interacted" })
+      .query({ statementId: "statement", verb: "http://adlnet.gov/expapi/interacted" })
       .expect(400);
   });
 
@@ -188,11 +199,11 @@ describe("[PUT] /pages/api/statements", () => {
 });
 
 describe("[HEAD] /pages/api/statements", () => {
-  it("returns 201 and the metadata for the statement", async () => {});
+  it.skip("returns 201 and the metadata for the statement", async () => {});
 
-  it("returns 201 and the metadata for the statements", async () => {});
+  it.skip("returns 201 and the metadata for the statements", async () => {});
 
-  it("returns 404 on requests without authorization", async () => {});
+  it.skip("returns 404 on requests without authorization", async () => {});
 
-  it("returns 400 on ", async () => {});
+  it.skip("returns 400 on ", async () => {});
 });

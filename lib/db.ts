@@ -1,9 +1,4 @@
-import { MongoClient } from "mongodb";
-import { mongoDBURI } from "/app/config";
+import { PrismaClient } from "@prisma/client";
 
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-};
-
-export default new MongoClient(mongoDBURI, options);
+let dbClient = new PrismaClient()
+export default dbClient;

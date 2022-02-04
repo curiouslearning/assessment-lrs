@@ -44,7 +44,6 @@
             ]
           },
           "version": "1.0",
-          "stored": "2002-02-10T06:24:40.162Z",
           "attachments": [
             {
               "usageType": "http://siwhosi.uz/mu",
@@ -220,7 +219,6 @@
               "duration": "P49107.25730W8563.DT"
             }
           }
-
         },
         {
           "actor": {
@@ -687,7 +685,6 @@
               "success": true
             }
           },
-          "stored": "1962-09-12T20:02:51.038Z",
           "context": {
             "extensions": {},
             "contextActivities": {
@@ -1667,7 +1664,6 @@
       },
       "version": "1.0",
       "timestamp": "2002-02-10T06:24:40.162Z",
-      "stored": "2002-02-10T06:24:40.162Z",
       "attachments": [
         {
           "usageType": "http://siwhosi.uz/mu",
@@ -1706,7 +1702,6 @@
         }
       },
       "id": "2ca05e3a-b571-48ea-b3b5-8d28216b3094",
-      "_id": "2ca05e3a-b571-48ea-b3b5-8d28216b3094",
       "context": {
         "contextActivities": {
           "parent": [
@@ -1831,8 +1826,7 @@
           }
         ]
       },
-      "version": "1.1",
-      "stored": "2002-02-10T06:24:40.162Z",
+      "version": "1.0",
       "attachments": [
         {
           "usageType": "http://siwhosi.uz/mu",
@@ -1867,7 +1861,7 @@
         "response": "zobwatvif",
         "success": true,
         "score": {
-          "scaled": 0.7779414616644966
+          "scaled": 0.8
         }
       },
       "id": "2ca05e3a-b571-48ea-b3b5-8d28216b3094",
