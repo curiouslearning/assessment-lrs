@@ -1,0 +1,51 @@
+{
+  "profileCollection": {
+    "profiles": [
+      {
+        "profileId": "testProfile01",
+        "agent": {
+          "mbox": "eric@eric.gt"
+        },
+        "continent": "North-America",
+        "country": "United Sates",
+        "region": "Rhode Island",
+        "city": "Providence",
+        "lat": "41.49.41.5N",
+        "lng": "71.24.43.8W",
+        "referralId": "testCampaign",
+        "languages": ["en-US", "es-CO"]
+      }
+    ],
+    "profileIds": ["testProfile01"]
+  },
+  "singleAgentProfile": {
+    "agent": {"mbox": "eric@eric.gt"},
+    "profile": {
+      "profileId": "testProfile01",
+      "agent": {
+        "mbox": "eric@eric.gt"
+      },
+      "continent": "North-America",
+      "country": "United Sates",
+      "region": "Rhode Island",
+      "city": "Providence",
+      "lat": "41.49.41.5N",
+      "lng": "71.24.43.8W",
+      "referralId": "testCampaign",
+      "languages": ["en-US", "es-CO"]
+    },
+    "profileId": "testProfile01"
+  },
+  "singleAgentCollection": {
+    "agent": {"mbox":"eric@eric.gt"},
+    "profiles": [],
+    "profileIds": [],
+    "since": "",
+    "filterCount": 5
+  },
+  "illegalProfile": {
+    "agent": {},
+    "profile": {},
+    "profileId": ""
+  }
+}

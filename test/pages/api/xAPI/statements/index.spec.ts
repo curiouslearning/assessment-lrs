@@ -2,7 +2,7 @@ import {
   illegalStatementCollection,
   singleStatement,
   statementCollection,
-} from "../../../fixtures.json";
+} from "../../../fixtures/statementFixtures.json";
 import dbClient from "../../../../../lib/db";
 import handlers from "../../../../../pages/api/xAPI/statements/index";
 import { testServer } from "../../../../server";

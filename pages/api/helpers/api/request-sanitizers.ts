@@ -5,6 +5,15 @@ import crypto from 'crypto'
 export type Next = () => void | Promise<void>;
 export default function middleware () {
   return ({
+    validateBody: ( //https://stackoverflow.com/questions/679915/how-do-i-test-for-an-empty-javascript-object
+      body: any
+    ): bool => {
+      return (
+        body &&
+        Object.keys(body).length === 0 &&
+        Object.getPrototypeOf(body) === Object.prototype
+      )
+    },
     sanitizeQueryParams: (
       req: NextRequest,
       res: NextFetchEvent,

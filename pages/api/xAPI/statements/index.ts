@@ -24,7 +24,7 @@ type QueryParams = {
       name: string;
     };
   };
-  activit: string;
+  activity: string;
   registration: string;
   related_activities: bool;
   related_agents: bool;
