@@ -13,7 +13,7 @@ const pw= "test-password";
 
 beforeEach(async() => {
   //reset db
-  await dbClient.agentAccount.deleteMany({});
+  // await dbClient.agentAccount.deleteMany({});
   await dbClient.activityProfile.deleteMany({});
   await dbClient.agentProfile.deleteMany({});
   await dbClient.statement.deleteMany({});
@@ -75,12 +75,12 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
     await testServer(handlers).get("/").expect(404);
   });
 
-  it("returns 200 ok and no content", async () => {
+  it.only("returns 200 ok and no content", async () => {
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
       .query({
-        agent: singleAgentProfile.agent,
+        agent: JSON.stringify(singleAgentProfile.agent),
         profileId: singleAgentProfile.profileId
       }).expect({})
       .expect(200);
