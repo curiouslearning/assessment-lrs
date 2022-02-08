@@ -2,7 +2,7 @@ import {
   illegalStatementCollection,
   singleStatement,
   statementCollection,
-} from "../../../fixtures.json";
+} from "../../../fixtures/statementFixtures.json";
 import dbClient from "../../../../../lib/db";
 import handlers from "../../../../../pages/api/xAPI/statements/index";
 import { testServer } from "../../../../server";
@@ -12,7 +12,6 @@ const pw = "test-password";
 
 beforeEach(async () => {
   // reset db
-  await dbClient.agentAccount.deleteMany({});
   await dbClient.activityProfile.deleteMany({});
   await dbClient.agentProfile.deleteMany({});
   await dbClient.statement.deleteMany({});
