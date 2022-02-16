@@ -10,8 +10,9 @@ export default function middleware () {
     ): bool => {
       return (
         body &&
-        Object.keys(body).length === 0 &&
-        Object.getPrototypeOf(body) === Object.prototype
+        Object.keys(body).length !== 0 &&
+        ( Array.isArray(body) ||
+          Object.getPrototypeOf(body) === Object.prototype )
       )
     },
     sanitizeQueryParams: (

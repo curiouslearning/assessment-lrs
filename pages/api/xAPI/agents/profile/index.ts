@@ -16,15 +16,16 @@ async function handleGET(req, res) {
     if(!query || !query.agent) {
       throw "you must provide an agent and a profileId or timestamp cursor";
     }
-    query['agent'] = JSON.parse(query['agent'])
-    if(req.profileId && req.since) {
+    const agent = JSON.parse(query.agent);
+    if(query.profileId && query.since) {
       throw("cannot specify a profile id and a timestamp!")
     }
-    if (req.profileId) {
-      const profile = await model.getProfile(query.agent, req.profileId);
+    if (query.profileId) {
+      const profile = await model.getProfile(agent, query.profileId);
       return res.status(200).json(profile);
     } else {
-      const idList = await model.getAllForAgent(req.agent, req.since);
+      const idList = await model.getAllForAgent(agent, query.since);
+      console.log(`idList: ${idList}`)
       return res.status(200).json(idList);
     }
   } catch(err) {
@@ -36,10 +37,13 @@ async function handlePOST(req, res) {
   try {
     if(helpers.validateBody(req.body)) {
       await model.add(req.body);
+    } else {
+      throw "invalid request body";
     }
     return res.status(204).send();
   } catch(err) {
     if (err instanceof Prisma.PrismaClientValidationError) {
+      console.error(err);
       throw "invalid profile in request body";
     }
     throw err;
@@ -62,11 +66,13 @@ async function handlePUT(req, res) {
 
 async function handleDELETE(req, res) {
   try {
-    const query = new URL(`http://${req.headers.host}`).searchParams
+    const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
+    const query = Object.fromEntries(params.entries());
     if(!query || (!query.agent && !query.profileId)) {
       throw "please specify an agent and a profile Id";
     }
-    await model.deleteProfile(agent, profileId);
+    const agent = JSON.parse(query.agent);
+    await model.deleteProfile(agent, query.profileId);
     return res.status(204).send({});
   } catch(err) {
     throw err;

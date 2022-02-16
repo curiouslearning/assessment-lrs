@@ -31,15 +31,15 @@ enum ObjectType {
 
 model AgentProfile {
   profileId  String      @id @default(cuid())
-  objectType ObjectType?
+  objectType ObjectType  @default(value: Agent)
   agent      Agent       @relation(references: [id], fields: [agentId])
   agentId    String
   continent  String?
   country    String?
   region     String?
   city       String?
-  lat        Float?
-  lng        Float?
+  lat        String?
+  lng        String?
   referralId String?
   languages  String[]
   stored     DateTime @default(now())
@@ -54,7 +54,7 @@ model Agent {
   openid       String?
   AgentProfile AgentProfile[]
 
-  @@unique([homepage, name])
+  @@unique([homepage, name, mbox, mbox_sha1sum, openid])
 }
 
 model ActivityProfile {
