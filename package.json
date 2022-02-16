@@ -1,8 +1,9 @@
 {
   "scripts": {
     "test": "nodemon --exec \"npm run test-ci\" --ext .ts --ignore node_modules",
+    "migrate": "dotenv -- npx prisma migrate dev --name init",
     "test-ci": "ts-mocha -p tsconfig.json test/**/*.spec.ts",
-    "migrate": "dotenv -- npx prisma migrate dev --name init"
+    "migrate-ci": "dotenv -- prisma migrate dev"
   },
   "dependencies": {
     "@prisma/client": "^3.9.1",
