@@ -8,29 +8,33 @@ export async function add(profiles) {
     profiles.map((profile) => {
       const agent = profile.agent;
       if (!agent) throw "Agent Profile missing agent";
-      dbClient.agentProfile.create({
+      return dbClient.agentProfile.create({
         data:{
-          profileId: profile.id,
+          profileId: profile.profileId,
           agent: {
             connectOrCreate: {
               where: {
-                mbox: agent.mbox? agent.mbox : null,
-                mbox_sha1sum: agent.mbox_sha1sum? agent.mbox_sha1sum : null,
-                openid: agent.openid? agent.openid : null,
-                name: agent.account? (agent.account.name? agent.account.name: null ) : null,
-                homepage: agent.account? (agent.account.homepage? agent.account.homepage : null) : null
+                homepage_name_mbox_mbox_sha1sum_openid: {
+                  mbox:agent.mbox? agent.mbox : "",
+                  mbox_sha1sum: agent.mbox_sha1sum? agent.mbox_sha1sum : "",
+                  openid: agent.openid? agent.openid : "",
+                  name: agent.account? (agent.account.name? agent.account.name: "" ) : "",
+                  homepage: agent.account? (agent.account.homepage? agent.account.homepage : "") : ""
+                }
               }, create: {
-                mbox: agent.mbox,
-                mbox_sha1sum: agent.mbox_sha1sum,
-                openid: agent.openid,
-                homepage: agent.account? agent.account.homepage :null,
-                name: agent.account? agent.account.name : null
+                mbox: agent.mbox? agent.mbox : "",
+                mbox_sha1sum: agent.mbox_sha1sum? agent.mbox_sha1sum : "",
+                openid: agent.openid? agent.openid : "",
+                homepage: agent.account? agent.account.homepage : "",
+                name: agent.account? agent.account.name : ""
              }
            }
           },
           continent: profile.continent,
           country: profile.country,
           region: profile.region,
+          languages: profile.languages,
+          referralId: profile.referralId,
           city: profile.city,
           lat: profile.lat,
           lng: profile.lng,
@@ -39,7 +43,7 @@ export async function add(profiles) {
       });
     })
   );
-  return;
+  return inserts;
 }
 
 export async function all() {
@@ -51,55 +55,49 @@ export async function getAllForAgent(agent, since) {
     where:{
       agent: agent,
       stored: {
-        gt: since? since: new Date("1980-01-01").toISOString()
+        gt: since? new Date(since): new Date("1980-01-01").toISOString()
       }
+    },
+    select: {
+      profileId: true
     }
   });
 
-  //format for xAPI and return
-  return (rows.map((row) => {
-    const agent = row.agent;
-    if (agent.homepage && agent.name) {
-      agent['account'] = {
-        homepage: agent.homepage,
-        name: agent.name
-      };
-      delete agent['id'];
-      delete agent['homepage'];
-      delete agent['name'];
-      row.agent = agent;
-      return row;
-    }
-  }));
+  return rows;
 }
 
 export async function getProfile(agent, profileId) {
-  const rows = await dbClient.agentProfile.findUnique({
+  const row = await dbClient.agentProfile.findFirst({
     where: {
       agent: agent,
       profileId: profileId
+    },
+    include: {
+      agent: true
     }
   });
-  return (rows.map(rows => {
-    const agent = row.agent;
-    if (agent.homepage && agent.name) {
-      agent['account'] = {
-        homepage: agent.homepage,
-        name: agent.name
-      };
-      delete agent['id'];
-      delete agent['homepage'];
-      delete agent['name'];
-      row.agent = agent;
-      return row;
+  const formattedAgent = row.agent;
+  Object.keys(formattedAgent).forEach((prop) => {
+    if (!formattedAgent[prop]) {
+      delete formattedAgent[prop]
     }
-  }));
+  });
+  if (formattedAgent.homepage && formattedAgent.name) {
+    formattedAgent['account'] = {
+      homepage: formattedAgent.homepage,
+      name: formattedAgent.name
+    };
+    delete formattedAgent['homepage'];
+    delete formattedAgent['name'];
+  }
+  delete formattedAgent['id'];
+  row.agent = formattedAgent;
+  return row;
 }
 
 export async function deleteProfile(agent, profileId) {
   await dbClient.agentProfile.delete({
     where: {
-      agent: agent,
       profileId: profileId
     }
   });

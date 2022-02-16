@@ -31,7 +31,13 @@ describe ("[POST] /api/xAPI/agents/profile", () => {
       .send(profileCollection.profiles)
       .expect(204);
   });
-
+  it("returns 204 No Content", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(singleAgentProfile.profile)
+      .expect(204);
+  });
   it("returns 400 on invalid agent profile", async () => {
     await testServer(handlers)
       .post("/")
@@ -75,14 +81,14 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
     await testServer(handlers).get("/").expect(404);
   });
 
-  it.only("returns 200 ok and no content", async () => {
+  it("returns 200 ok and no content", async () => {
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
       .query({
         agent: JSON.stringify(singleAgentProfile.agent),
         profileId: singleAgentProfile.profileId
-      }).expect({})
+      }).expect([])
       .expect(200);
   });
 
@@ -90,13 +96,15 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
-      .query({agent: singleAgentCollection.agent})
-      .expect({})
+      .query({
+        agent: JSON.stringify(singleAgentCollection.agent)
+      }).expect([])
       .expect(200);
   });
 
   it("returns 200 ok and the profile document", async () => {
     const {
+      agent,
       profile,
       profileId
     } = singleAgentProfile;
@@ -110,10 +118,13 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
       .get("/")
       .auth(usr, pw)
       .query({
-        agent: agent,
-        profileId: profileId
+        agent: JSON.stringify(agent),
+        profileId: profileId.profileId
       }).expect(res => {
-        delete res.json['stored'];
+        delete res.body['stored'];
+        delete res.body['objectType'];
+        delete res.body['agentId'];
+        return res;
       }).expect(profile)
       .expect(200);
   });
@@ -121,7 +132,8 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
   it("returns 200 ok and the list of available IDs", async () => {
     const {
       profiles,
-      agent
+      agent,
+      profileIds
     } = singleAgentCollection;
 
     await testServer(handlers)
@@ -132,8 +144,8 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
-      .query({agent: agent})
-      .expect((res) => {res.json.length === profiles.length} )
+      .query({agent: JSON.stringify(agent)})
+      .expect(res => res.body.sort() === profileIds.sort())
       .expect(200);
   });
 
@@ -142,7 +154,7 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
       agent,
       profiles,
       since,
-      filterCount
+      profileIds
     } = singleAgentCollection;
 
     await testServer(handlers)
@@ -153,8 +165,8 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
-      .query({agent: agent, since: since})
-      .expect((res) => {res.json.length === filterCount})
+      .query({agent: JSON.stringify(agent), since: since})
+      .expect(res => res.body.sort() === profileIds.sort())
       .expect(200);
   })
 
@@ -199,7 +211,7 @@ describe("[DELETE] /api/xAPI/agents/profile", () => {
     await testServer(handlers)
       .delete("/")
       .auth(usr, pw)
-      .query({agent: agent, profileId, profileId})
+      .query({agent: JSON.stringify(agent), profileId: profileId.profileId})
       .expect(204)
   });
 
