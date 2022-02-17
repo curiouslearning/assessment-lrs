@@ -1,4 +1,4 @@
-## simple Learning Record Store app using MongoDB and Next.js
+## simple Learning Record Store app using PostgreSQL and Next.js
 
 
 

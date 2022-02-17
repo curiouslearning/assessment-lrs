@@ -12,11 +12,12 @@ services:
       bash -c '
         echo "Running tests..."
         npm install
-        npm run migrate
         if [ "${IS_CI}" = "" ]
         then
+          npm run migrate
           npm test
         else
+          npm run migrate-ci
           npm run test-ci
         fi
       '
