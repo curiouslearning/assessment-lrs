@@ -1,9 +1,6 @@
-import Cors from "cors";
 import deepEqual from "deep-equal";
-import type { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "../../../helpers/api/api-handler";
-import middleware, { Next } from "../../../helpers/api/request-sanitizers";
-import dbClient from "../../../../../lib/db";
+import middleware, { Next } from "../../../helpers/api/middleware";
 import * as model from "../../../../../models/agentProfile";
 import { Prisma } from "@prisma/client";
 
@@ -22,6 +19,7 @@ async function handleGET(req, res) {
     }
     if (query.profileId) {
       const profile = await model.getProfile(agent, query.profileId);
+      profile.agent = helpers.formatAgentToXapi(profile.agent);
       return res.status(200).json(profile);
     } else {
       const idList = await model.getAllForAgent(agent, query.since);
@@ -34,9 +32,16 @@ async function handleGET(req, res) {
 }
 
 async function handlePOST(req, res) {
+  if (!req.body) {
+    return res.status(204).send();
+  }
   try {
     if(helpers.validateBody(req.body)) {
-      await model.add(req.body);
+      if(!Array.isArray(req.body)) {
+        await model.add([req.body])
+      } else {
+        await model.add(req.body);
+      }
     } else {
       throw "invalid request body";
     }
@@ -51,9 +56,18 @@ async function handlePOST(req, res) {
 }
 
 async function handlePUT(req, res) {
+  if (!req.body) {
+    return res.status(204).send();
+  }
   try {
     if (helpers.validateBody(req.body)) {
-      await model.add(req.body);
+      if(!Array.isArray(req.body)) {
+        await model.add([req.body])
+      } else {
+        await model.add(req.body);
+      }
+    } else {
+      throw "invalid request body";
     }
     return res.status(204).send({});
   } catch(err) {

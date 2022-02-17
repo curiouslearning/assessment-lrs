@@ -22,6 +22,24 @@ export default function middleware () {
     ): void => {
 
     },
+    formatAgentToXapi: (agent: any): any => {
+      const formattedAgent = agent;
+      Object.keys(formattedAgent).forEach((prop) => {
+        if (!formattedAgent[prop]) {
+          delete formattedAgent[prop]
+        }
+      });
+      if (formattedAgent.homepage && formattedAgent.name) {
+        formattedAgent['account'] = {
+          homepage: formattedAgent.homepage,
+          name: formattedAgent.name
+        };
+        delete formattedAgent['homepage'];
+        delete formattedAgent['name'];
+      }
+      delete formattedAgent['id'];
+      return formattedAgent;
+    },
     sanitizeBody: (
       req: NextRequest,
       res: NextFetchEvent,

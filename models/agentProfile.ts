@@ -1,9 +1,6 @@
 import dbClient from "../lib/db";
 
 export async function add(profiles) {
-  if(!Array.isArray(profiles)) {
-    profiles = [profiles]
-  }
   const inserts = await dbClient.$transaction(
     profiles.map((profile) => {
       const agent = profile.agent;
@@ -53,7 +50,7 @@ export async function all() {
 export async function getAllForAgent(agent, since) {
   const rows = await dbClient.agentProfile.findMany({
     where:{
-      agent: agent,
+      agent,
       stored: {
         gt: since? new Date(since): new Date("1980-01-01").toISOString()
       }
@@ -69,29 +66,13 @@ export async function getAllForAgent(agent, since) {
 export async function getProfile(agent, profileId) {
   const row = await dbClient.agentProfile.findFirst({
     where: {
-      agent: agent,
+      agent,
       profileId: profileId
     },
     include: {
       agent: true
     }
   });
-  const formattedAgent = row.agent;
-  Object.keys(formattedAgent).forEach((prop) => {
-    if (!formattedAgent[prop]) {
-      delete formattedAgent[prop]
-    }
-  });
-  if (formattedAgent.homepage && formattedAgent.name) {
-    formattedAgent['account'] = {
-      homepage: formattedAgent.homepage,
-      name: formattedAgent.name
-    };
-    delete formattedAgent['homepage'];
-    delete formattedAgent['name'];
-  }
-  delete formattedAgent['id'];
-  row.agent = formattedAgent;
   return row;
 }
 

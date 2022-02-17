@@ -13,7 +13,6 @@ const pw= "test-password";
 
 beforeEach(async() => {
   //reset db
-  // await dbClient.agentAccount.deleteMany({});
   await dbClient.activityProfile.deleteMany({});
   await dbClient.agentProfile.deleteMany({});
   await dbClient.statement.deleteMany({});
