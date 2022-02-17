@@ -5,12 +5,40 @@ import crypto from 'crypto'
 export type Next = () => void | Promise<void>;
 export default function middleware () {
   return ({
+    validateBody: ( //https://stackoverflow.com/questions/679915/how-do-i-test-for-an-empty-javascript-object
+      body: any
+    ): bool => {
+      return (
+        body &&
+        Object.keys(body).length !== 0 &&
+        ( Array.isArray(body) ||
+          Object.getPrototypeOf(body) === Object.prototype )
+      )
+    },
     sanitizeQueryParams: (
       req: NextRequest,
       res: NextFetchEvent,
       next: Next
     ): void => {
 
+    },
+    formatAgentToXapi: (agent: any): any => {
+      const formattedAgent = agent;
+      Object.keys(formattedAgent).forEach((prop) => {
+        if (!formattedAgent[prop]) {
+          delete formattedAgent[prop]
+        }
+      });
+      if (formattedAgent.homepage && formattedAgent.name) {
+        formattedAgent['account'] = {
+          homepage: formattedAgent.homepage,
+          name: formattedAgent.name
+        };
+        delete formattedAgent['homepage'];
+        delete formattedAgent['name'];
+      }
+      delete formattedAgent['id'];
+      return formattedAgent;
     },
     sanitizeBody: (
       req: NextRequest,

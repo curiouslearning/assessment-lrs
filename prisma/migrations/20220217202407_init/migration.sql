@@ -20,22 +20,32 @@ CREATE TABLE "Statement" (
 
 -- CreateTable
 CREATE TABLE "AgentProfile" (
+    "profileId" TEXT NOT NULL,
+    "objectType" "ObjectType" NOT NULL DEFAULT E'Agent',
+    "agentId" TEXT NOT NULL,
+    "continent" TEXT,
+    "country" TEXT,
+    "region" TEXT,
+    "city" TEXT,
+    "lat" TEXT,
+    "lng" TEXT,
+    "referralId" TEXT,
+    "languages" TEXT[],
+    "stored" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "AgentProfile_pkey" PRIMARY KEY ("profileId")
+);
+
+-- CreateTable
+CREATE TABLE "Agent" (
     "id" TEXT NOT NULL,
-    "objectType" "ObjectType",
+    "homepage" TEXT,
+    "name" TEXT,
     "mbox" TEXT,
     "mbox_sha1sum" TEXT,
     "openid" TEXT,
 
-    CONSTRAINT "AgentProfile_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "AgentAccount" (
-    "agentId" TEXT NOT NULL,
-    "homePage" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-
-    CONSTRAINT "AgentAccount_pkey" PRIMARY KEY ("homePage","name")
+    CONSTRAINT "Agent_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -62,7 +72,7 @@ CREATE TABLE "ActivityProfile" (
 CREATE UNIQUE INDEX "Statement_id_key" ON "Statement"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AgentAccount_agentId_key" ON "AgentAccount"("agentId");
+CREATE UNIQUE INDEX "Agent_homepage_name_mbox_mbox_sha1sum_openid_key" ON "Agent"("homepage", "name", "mbox", "mbox_sha1sum", "openid");
 
 -- AddForeignKey
-ALTER TABLE "AgentAccount" ADD CONSTRAINT "AgentAccount_agentId_fkey" FOREIGN KEY ("agentId") REFERENCES "AgentProfile"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AgentProfile" ADD CONSTRAINT "AgentProfile_agentId_fkey" FOREIGN KEY ("agentId") REFERENCES "Agent"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

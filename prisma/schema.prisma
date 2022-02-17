@@ -8,17 +8,17 @@ datasource db {
 }
 
 model Statement {
-  id            String @id @unique @default(cuid())
-  actorId       String
-  actorType     ObjectType?
-  verbId        String
-  objectId      String
-  objectType    ObjectType?
-  timestamp     DateTime?
-  stored        DateTime @default(now())
-  version       String @default("1.0.0")
-  statement     Json
-  attachments   Json?
+  id          String      @id @unique @default(cuid())
+  actorId     String
+  actorType   ObjectType?
+  verbId      String
+  objectId    String
+  objectType  ObjectType?
+  timestamp   DateTime?
+  stored      DateTime    @default(now())
+  version     String      @default("1.0.0")
+  statement   Json
+  attachments Json?
 }
 
 enum ObjectType {
@@ -30,25 +30,36 @@ enum ObjectType {
 }
 
 model AgentProfile {
-  id            String @id
-  objectType    ObjectType?
-  account       AgentAccount?
-  mbox          String?
-  mbox_sha1sum  String?
-  openid        String?
+  profileId  String      @id @default(cuid())
+  objectType ObjectType  @default(value: Agent)
+  agent      Agent       @relation(references: [id], fields: [agentId])
+  agentId    String
+  continent  String?
+  country    String?
+  region     String?
+  city       String?
+  lat        String?
+  lng        String?
+  referralId String?
+  languages  String[]
+  stored     DateTime @default(now())
 }
 
-model AgentAccount {
-  agent     AgentProfile @relation(references: [id], fields: [agentId])
-  agentId   String
-  homePage  String
-  name      String
-  @@id([homePage, name])
+model Agent {
+  id           String         @id @default(cuid())
+  homepage     String?
+  name         String?
+  mbox         String?
+  mbox_sha1sum String?
+  openid       String?
+  AgentProfile AgentProfile[]
+
+  @@unique([homepage, name, mbox, mbox_sha1sum, openid])
 }
 
 model ActivityProfile {
   objectType              ObjectType?
-  id                      String @id
+  id                      String      @id
   name                    Json
   description             Json
   type                    String?
