@@ -1,6 +1,21 @@
 import dbClient from "../lib/db";
+import { Agent } from './agent';
 
-export async function add(profiles) {
+export interface AgentProfile {
+  profileId: string;
+  agent: Agent;
+  continent: string;
+  country: string;
+  region: string;
+  city: string;
+  lat: string;
+  lng: string;
+  referralId: string;
+  languages: string[];
+  stored: string;
+}
+
+export async function add(profiles: AgentProfile[]) {
   const inserts = await dbClient.$transaction(
     profiles.map((profile) => {
       const agent = profile.agent;
@@ -47,7 +62,7 @@ export async function all() {
   return await dbClient.agentProfile.findMany();
 }
 
-export async function getAllForAgent(agent, since) {
+export async function getAllForAgent(agent: Agent, since: string): Promise<{profileId: string}[]> {
   const rows = await dbClient.agentProfile.findMany({
     where:{
       agent,
@@ -63,7 +78,7 @@ export async function getAllForAgent(agent, since) {
   return rows;
 }
 
-export async function getProfile(agent, profileId) {
+export async function getProfile(agent: Agent, profileId: string): Promise<AgentProfile> {
   const row = await dbClient.agentProfile.findFirst({
     where: {
       agent,
@@ -76,7 +91,7 @@ export async function getProfile(agent, profileId) {
   return row;
 }
 
-export async function deleteProfile(agent, profileId) {
+export async function deleteProfile(agent: Agent, profileId: string) {
   await dbClient.agentProfile.delete({
     where: {
       profileId: profileId

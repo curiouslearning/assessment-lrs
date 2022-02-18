@@ -1,0 +1,6 @@
+node_modules/
+helm/
+dev/
+docs/
+api/keys/
+secrets/
