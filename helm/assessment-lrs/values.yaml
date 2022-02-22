@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/curiouslearning/curiousdata/assessment-lrs
+  repository: ghcr.io/curiouslearning/assessment-lrs
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -15,21 +15,15 @@ nameOverride: ""
 fullnameOverride: ""
 container:
   env:
-    DATABASE_URL:
-      name: DATABASE_URL
-      value: /app/var/secrets/keys/db-con-string.txt
     PORT:
       name: PORT
       value: 180
-  volumeMounts:
-    - name: keys
-      readOnly: true
-      mountPath: app/var/secrets/keys
-
-volumes:
-  - name: keys
-    secret:
-      secretName: db-con-string
+    DATABASE_URL:
+      name: DATABASE_URL
+      valueFrom:
+        secretKeyRef:
+          name: app-env-secret
+          key: database_url
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -96,3 +90,12 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+secret:
+  name: app-env-secret
+
+env:
+  normal:
+    PORT: 180
+  secret:
+    DATABASE_URL: fakey-url

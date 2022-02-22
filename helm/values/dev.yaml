@@ -1,8 +1,0 @@
-image:
-  repository: localhost:5000/assessment-lrs
-  pullPolicy: Always
-  tag: "registry"
-service:
-  port: 3000
-
-initialDelaySeconds: 25 

@@ -40,9 +40,16 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            {{- range .Values.container.env }}
-            - name: {{ .name | quote}}
-              value: {{ .value | quote }}
+            {{- range $key, $val := .Values.env.normal }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- range $key, $val := .Values.env.secret }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: app-env-secret
+                  key: {{ $key }}
             {{- end }}
           volumeMounts:
             {{- range .Values.container.volumeMounts }}
@@ -52,13 +59,15 @@ spec:
             {{- end }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.env.normal.PORT }}
               protocol: TCP
           livenessProbe:
+            initialDelaySeconds: {{ .Values.initialDelaySeconds }}
             httpGet:
               path: /
               port: http
           readinessProbe:
+            initialDelaySeconds: {{ .Values.initialDelaySeconds }}
             httpGet:
               path: /
               port: http

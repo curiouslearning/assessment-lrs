@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start-ci": "next build && next start",
+    "start-ci": "npx prisma generate && next build && next start",
     "build": "next build",
     "dev": "tsc --watch",
     "start": "next start",
