@@ -1,9 +1,19 @@
 import Cors from "cors";
 import deepEqual from "deep-equal";
-import type { NextRequest, NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { apiHandler } from "../../helpers/api/api-handler";
 import middleware, { Next } from "../../helpers/api/middleware";
 import * as statementsModel from "../../../../models/statements";
+import {
+  Agent,
+  Group,
+  Activity,
+  SubStatement,
+  StatementRef,
+  Statement,
+  Result,
+  Context
+} from '../models';
 import { Prisma } from "@prisma/client";
 
 const helpers = middleware();
@@ -13,8 +23,14 @@ enum FormatTypes {
   canonical = "canonical",
 }
 type QueryParams = {
-  statementId?: string;
-  voidedStatmentId?: string;
+  id: string;
+  actor: Agent | Group | Activity;
+  verb: string;
+  object: Agent | Group | Activity | StatementRef | Statement;
+  context: {
+    registration: string;
+  };
+  timestamp: any;
   agent: {
     objectType?: "Agent";
     name?: string;
@@ -23,17 +39,15 @@ type QueryParams = {
       name: string;
     };
   };
-  activity: string;
-  registration: string;
-  related_activities: bool;
-  related_agents: bool;
-  since: timestamp;
-  until: Timestamp;
-  limit: number;
-  format: FormatTypes;
-  attachments: bool;
-  ascending: bool;
 };
+
+type QueryOptions = {
+  params: QueryParams;
+  limit: number;
+  sort: {[key:string]: number};
+  attachments: Array<string>;
+  format: string;
+}
 
 /********************************HELPER MIDDLEWARE*****************************/
 const cors = Cors({
@@ -41,12 +55,12 @@ const cors = Cors({
 });
 
 async function runMiddleware(
-  req: NextRequest,
-  res: NextResponse,
-  fn: Next
-): void {
+  req: NextApiRequest,
+  res: NextApiResponse,
+  fn: any
+): Promise<void> {
   return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
+    fn(req, res, (result: any) => {
       console.log(result);
       if (result instanceof Error) {
         return reject(result);
@@ -58,7 +72,7 @@ async function runMiddleware(
 }
 
 /******************************GET, HEAD***************************************/
-async function handleGET(req: NextRequest, res: NextResponse): void {
+async function handleGET(req: NextApiRequest, res: NextApiResponse): Promise<any>{
   try {
     // await runMiddleware(req, res, sanitizeQueryParams);
     // await runMiddleware(req, res, cors);
@@ -75,14 +89,14 @@ async function handleGET(req: NextRequest, res: NextResponse): void {
   }
 }
 
-function generateQueryParams(query: QueryParams = {}): any {
-  let options = {};
-  let params = {};
+function generateQueryParams(query: any = {}): QueryOptions {
+  let params = {} as QueryParams;
+  let options = {} as QueryOptions;
   if (query) {
     if (query.voidedStatmentId) {
-      params["_id"] = query.voidedStatmentId;
+      params["id"] = query.voidedStatmentId;
     } else if (query.statementId) {
-      params["_id"] = query.statementId;
+      params["id"] = query.statementId;
     }
 
     if (query.agent) {
@@ -93,7 +107,10 @@ function generateQueryParams(query: QueryParams = {}): any {
       params["verb"] = query.verb;
     }
     if (query.activity) {
-      params["object"]["id"] = query.activity;
+      params["object"] = {
+        objectType: "Activity",
+        id: query.activity
+      }
     }
     if (query.registration) {
       params["context"]["registration"] = query.registration;
@@ -101,7 +118,10 @@ function generateQueryParams(query: QueryParams = {}): any {
     //TODO: implement these related flags as described in the specification
     // github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#213-get-statements
     if (query.related_activities) {
-      params["object"]["id"] = query.activity;
+      params["object"] = {
+        objectType: "Activity",
+        id: query.activity
+      };
     }
     if (query.related_agents) {
       params["actor"] = query.activity;
@@ -114,7 +134,7 @@ function generateQueryParams(query: QueryParams = {}): any {
     } else if (query.since) {
       params["timestamp"] = { $gte: query.since };
     } else if (query.until) {
-      param["timestamp"] = { $lte: query.since };
+      params["timestamp"] = { $lte: query.since };
     }
   }
   options["limit"] = query.limit ? query.limit : 0;
@@ -128,23 +148,23 @@ function generateQueryParams(query: QueryParams = {}): any {
   return options;
 }
 
-async function handleHEAD(req: NextRequest, res: NextResponse): void {
+async function handleHEAD(req: NextApiRequest, res: NextApiResponse): Promise<any>{
   return res.status(500).send("I'm not implemented yet!");
 }
 
 /************************************POST, PUT ********************************/
 async function addSingleStatement(
-  req: NextRequest,
-  res: NextResponse,
+  req: NextApiRequest,
+  res: NextApiResponse,
   next: Next
-): void {}
+): Promise<void> {}
 
 async function addMultipleStatements(
-  req: NextRequest,
-  res: NextResponse
-): void {}
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> {}
 
-async function handlePOST(req: NextRequest, res: NextResponse): void {
+async function handlePOST(req: NextApiRequest, res: NextApiResponse): Promise<any> {
   if (!req.body) {
     res.status(200).end();
   }
@@ -155,7 +175,7 @@ async function handlePOST(req: NextRequest, res: NextResponse): void {
     let body = req.body;
 
     //elevate indexable fields for DB storage
-    let rows = body.map((statement) => {
+    let rows = body.map((statement: any) => {
       const {
         actor,
         verb,
@@ -181,47 +201,59 @@ async function handlePOST(req: NextRequest, res: NextResponse): void {
     rows = helpers.createStatementID(rows, res, (err) => {
       throw err;
     });
-    req['rows'] = rows;
+    req.body = rows;
     const ids = await statementsModel.add(rows);
-    res.status(200).send(ids);
+    return res.status(200).send(ids);
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
       if(err.code === 'P2002') {
-        return await runDupeCheck(req, res, err)
+        const dupes = await runDupeCheck(req.body)
+        if(dupes) {
+          return res
+            .status(409)
+            .send(
+              `conflicting statement(s) already in database`
+          );
+        } else {
+          return res.status(204)
+            .send('insert did not complete, 1 or more duplicate records');
+        }
       }
     }
     throw err;
   } finally {
   }
 }
-async function runDupeCheck(req, res, err) {
-  const requestIds = req.rows.map((element) => element.id);
+async function runDupeCheck(rows: any) {
+  const requestIds = rows.map((element: any) => element.id);
   const dupes = await statementsModel.getByIDs(requestIds);
-  const conflicts = dupes.map((dupe) => {
-    const conflict = req.rows.find((elem) => elem.statement.id === dupe.statement.id);
+  const conflicts = dupes.map((dupe: any) => {
+    const conflict = rows.find((elem: any) => elem.statement.id === dupe.statement.id);
     if(conflict){
       return {original: dupe.statement, conflict: conflict.statement};
     }
   });
   let conflictIds = [];
   conflicts.forEach((pair) => {
-    delete pair.original["stored"];
-    delete pair.conflict["stored"];
-    if (!deepEqual(pair.original, pair.conflict)) {
-      conflictIds.push(pair.original.id);
+    if(pair) {
+      if (pair.original) {
+        delete pair.original["stored"];
+      }
+      if (pair.conflict) {
+        delete pair.conflict["stored"];
+      }
+      if (!deepEqual(pair.original, pair.conflict)) {
+        conflictIds.push(pair.original.id);
+      }
     }
   });
   if(conflictIds.length > 0) {
-      return res
-        .status(409)
-        .send(
-          `conflicting statement(s) with id(s) ${conflictIds} already in database`
-      );
+    return true;
   }
-  return res.status(204).send('insert did not complete, 1 or more duplicate records');
+  return false;
 }
 
-async function handlePUT(req: NextRequest, res: NextResponse): void {
+async function handlePUT(req: NextApiRequest, res: NextApiResponse): Promise<any> {
   return res.status(500).send("I'm not implemented yet!");
 }
 

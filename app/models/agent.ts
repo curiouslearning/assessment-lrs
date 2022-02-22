@@ -1,5 +1,6 @@
 import dbClient from '../lib/db';
-export interface Agent {
+export interface FormattedAgent {
+  objectType: string;
   mbox: string;
   mbox_sha1sum: string;
   openid: string;
@@ -9,12 +10,17 @@ export interface Agent {
   };
 }
 
-export async function createAgent(agent: Agent) {
+export interface Group extends FormattedAgent {
+  member: Array<FormattedAgent>;
+  name: string;
+}
+
+export async function createAgent(agent: FormattedAgent) {
   const id = await dbClient.agent.create({data: agent, select: { id: true }});
   return id;
 }
 
-export async function findByAgent(agent: Agent) {
+export async function findByAgent(agent: FormattedAgent) {
     const agentId = await dbClient.agent.findFirst({
      where: {
        mbox: agent.mbox? agent.mbox : "",

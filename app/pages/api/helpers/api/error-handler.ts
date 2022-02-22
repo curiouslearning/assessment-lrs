@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextApiResponse } from 'next';
 
 export  { errorHandler }
 
 function errorHandler (
-  err: string|Error,
-  res: NextResponse
+  err: any,
+  res: NextApiResponse
 ): void {
   if (typeof(err) === 'string') {
     console.error(err);

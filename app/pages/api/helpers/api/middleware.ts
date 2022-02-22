@@ -1,13 +1,14 @@
-import type { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import querystring from 'querystring'
 import crypto from 'crypto'
+import { FormattedAgent, Group } from '../../../../models/agent';
 
-export type Next = () => void | Promise<void>;
+export type Next = (err: any) => void | Promise<void>;
 export default function middleware () {
   return ({
     validateBody: ( //https://stackoverflow.com/questions/679915/how-do-i-test-for-an-empty-javascript-object
       body: any
-    ): bool => {
+    ): boolean => {
       return (
         body &&
         Object.keys(body).length !== 0 &&
@@ -16,8 +17,8 @@ export default function middleware () {
       )
     },
     sanitizeQueryParams: (
-      req: NextRequest,
-      res: NextFetchEvent,
+      req: NextApiRequest,
+      res: NextApiResponse,
       next: Next
     ): void => {
 
@@ -41,13 +42,12 @@ export default function middleware () {
       return formattedAgent;
     },
     sanitizeBody: (
-      req: NextRequest,
-      res: NextFetchEvent,
+      req: NextApiRequest,
+      res: NextApiResponse,
       next: Next
     ):void => {
       try{
-        console.log(typeof(req.body))
-        if(!req.body.length)  {
+        if(req.body && !req.body.length)  {
           req.body = [req.body];
         }
       } catch(err) {
@@ -56,10 +56,10 @@ export default function middleware () {
 
     },
     createStatementID: (
-      body: Array,
-      res: NextFetchEvent,
+      body: Array<any>,
+      res: NextApiResponse,
       next: Next
-    ): Array => {
+    ): Array<any> | undefined => {
       try {
         body.forEach((statement) => {
           if(!statement.id){
@@ -87,7 +87,7 @@ export default function middleware () {
           next(err);
       }
     },
-    getIRI: (agent) => {
+    getIRI: (agent: FormattedAgent & Group) => {
       if (agent.mbox) {
         return agent.mbox
       }
@@ -98,7 +98,7 @@ export default function middleware () {
         return agent.openid
       }
       if (agent.account) {
-        return `${agent.account.homePage}/${agent.account.name}`;
+        return `${agent.account.homepage}/${agent.account.name}`;
       }
       if (agent.member) {
         if (agent.name) {
@@ -114,11 +114,12 @@ export default function middleware () {
       return null;
     },
     validateQueryParams: (
-      req: NextRequest,
-      res: NextFetchEvent,
+      req: NextApiRequest,
+      res: NextApiResponse,
       next:Next
     ): void => {
       try {
+        if(!req.url || !req.headers || !req.headers.host) throw 'improper URL in request headers'
         const query = new URL(req.url, `http://${req.headers.host}`).searchParams;
         if(query.has("statementId") && query.has("voidedStatementId"))  {
           throw 'cannot include both statementID and voidedStatementId';

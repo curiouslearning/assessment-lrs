@@ -1,13 +1,26 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import deepEqual from "deep-equal";
 import { apiHandler } from "../../../helpers/api/api-handler";
 import middleware, { Next } from "../../../helpers/api/middleware";
 import * as model from "../../../../../models/agentProfile";
+import {
+  Agent,
+  Group,
+  Activity,
+  SubStatement,
+  StatementRef,
+  Statement,
+  Result,
+  Context
+} from '../../models';
+
 import { Prisma } from "@prisma/client";
 
 const helpers = middleware();
 
-async function handleGET(req, res) {
+async function handleGET(req: NextApiRequest, res: NextApiResponse) {
   try {
+    if(!req.url || !req.headers || !req.headers.host) throw 'improper url in request headers';
     const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
     const query = Object.fromEntries(params.entries());
     if(!query || !query.agent) {
@@ -19,7 +32,9 @@ async function handleGET(req, res) {
     }
     if (query.profileId) {
       const profile = await model.getProfile(agent, query.profileId);
-      profile.agent = helpers.formatAgentToXapi(profile.agent);
+      if (profile) {
+        profile.agent = helpers.formatAgentToXapi(profile.agent);
+      }
       return res.status(200).json(profile);
     } else {
       const idList = await model.getAllForAgent(agent, query.since);
@@ -31,9 +46,9 @@ async function handleGET(req, res) {
   }
 }
 
-async function handlePOST(req, res) {
+async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   if (!req.body) {
-    return res.status(204).send();
+    return res.status(204).end();
   }
   try {
     if(helpers.validateBody(req.body)) {
@@ -45,7 +60,7 @@ async function handlePOST(req, res) {
     } else {
       throw "invalid request body";
     }
-    return res.status(204).send();
+    return res.status(204).end();
   } catch(err) {
     if (err instanceof Prisma.PrismaClientValidationError) {
       console.error(err);
@@ -55,9 +70,9 @@ async function handlePOST(req, res) {
   }
 }
 
-async function handlePUT(req, res) {
+async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
   if (!req.body) {
-    return res.status(204).send();
+    return res.status(204).end();
   }
   try {
     if (helpers.validateBody(req.body)) {
@@ -78,8 +93,9 @@ async function handlePUT(req, res) {
   }
 }
 
-async function handleDELETE(req, res) {
+async function handleDELETE(req: NextApiRequest, res: NextApiResponse) {
   try {
+    if(!req.url || !req.headers || !req.headers.host) throw 'improper url in request header';
     const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
     const query = Object.fromEntries(params.entries());
     if(!query || (!query.agent && !query.profileId)) {

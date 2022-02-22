@@ -1,9 +1,10 @@
 import dbClient from "../lib/db";
-import { Agent } from './agent';
+import { FormattedAgent } from './agent';
+import { Prisma } from '@prisma/client';
 
 export interface AgentProfile {
   profileId: string;
-  agent: Agent;
+  agent: FormattedAgent;
   continent: string;
   country: string;
   region: string;
@@ -15,6 +16,7 @@ export interface AgentProfile {
   stored: string;
 }
 
+export type AgentProfileInclude = Prisma.PromiseReturnType<typeof getProfile>;
 export async function add(profiles: AgentProfile[]) {
   const inserts = await dbClient.$transaction(
     profiles.map((profile) => {
@@ -62,7 +64,7 @@ export async function all() {
   return await dbClient.agentProfile.findMany();
 }
 
-export async function getAllForAgent(agent: Agent, since: string): Promise<{profileId: string}[]> {
+export async function getAllForAgent(agent: FormattedAgent, since: string): Promise<{profileId: string}[]> {
   const rows = await dbClient.agentProfile.findMany({
     where:{
       agent,
@@ -78,7 +80,7 @@ export async function getAllForAgent(agent: Agent, since: string): Promise<{prof
   return rows;
 }
 
-export async function getProfile(agent: Agent, profileId: string): Promise<AgentProfile> {
+export async function getProfile(agent: FormattedAgent, profileId: string) {
   const row = await dbClient.agentProfile.findFirst({
     where: {
       agent,
@@ -91,7 +93,7 @@ export async function getProfile(agent: Agent, profileId: string): Promise<Agent
   return row;
 }
 
-export async function deleteProfile(agent: Agent, profileId: string) {
+export async function deleteProfile(agent: FormattedAgent, profileId: string): Promise<void> {
   await dbClient.agentProfile.delete({
     where: {
       profileId: profileId
