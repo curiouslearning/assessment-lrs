@@ -12,6 +12,8 @@ export interface AgentProfile {
   lat: string;
   lng: string;
   referralId: string;
+  utmAttribution: string;
+  organization: string;
   languages: string[];
   stored: string;
 }
@@ -49,6 +51,8 @@ export async function add(profiles: AgentProfile[]) {
           region: profile.region,
           languages: profile.languages,
           referralId: profile.referralId,
+          utmAttribution: profile.utmAttribution,
+          organization: profile.organization,
           city: profile.city,
           lat: profile.lat,
           lng: profile.lng,
