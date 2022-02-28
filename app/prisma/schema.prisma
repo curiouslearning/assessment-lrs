@@ -30,19 +30,21 @@ enum ObjectType {
 }
 
 model AgentProfile {
-  profileId  String      @id @default(cuid())
-  objectType ObjectType  @default(value: Agent)
-  agent      Agent       @relation(references: [id], fields: [agentId])
-  agentId    String
-  continent  String?
-  country    String?
-  region     String?
-  city       String?
-  lat        String?
-  lng        String?
-  referralId String?
-  languages  String[]
-  stored     DateTime @default(now())
+  profileId      String      @id @default(cuid())
+  objectType     ObjectType  @default(value: Agent)
+  agent          Agent       @relation(references: [id], fields: [agentId])
+  agentId        String
+  continent      String?
+  country        String?
+  region         String?
+  city           String?
+  lat            String?
+  lng            String?
+  referralId     String?
+  utmAttribution String?
+  organization   String?
+  languages      String[]
+  stored         DateTime @default(now())
 }
 
 model Agent {

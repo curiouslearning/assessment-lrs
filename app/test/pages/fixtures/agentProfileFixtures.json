@@ -27,6 +27,8 @@
         "lat": "41.49.41.5N",
         "lng": "71.24.43.8W",
         "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
         "languages": ["en-US", "es-CO"]
       },
       {
@@ -41,6 +43,8 @@
         "lat": "41.49.41.5N",
         "lng": "71.24.43.8W",
         "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
         "languages": ["en-US", "es-CO"]
       }
     ],
@@ -60,6 +64,8 @@
       "lat": "41.49.41.5N",
       "lng": "71.24.43.8W",
       "referralId": "testCampaign",
+      "utmAttribution": "testAttr",
+      "organization": "cl-test",
       "languages": ["en-US", "es-CO"]
     },
     "profileId": {"profileId": "testProfile01"}
@@ -79,6 +85,8 @@
         "lat": "41.49.41.5N",
         "lng": "71.24.43.8W",
         "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
         "languages": ["en-US", "es-CO"]
       },
       {
@@ -93,6 +101,8 @@
         "lat": "41.49.41.5N",
         "lng": "71.24.43.8W",
         "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
         "languages": ["en-US", "es-CO"]
       },
       {
@@ -107,6 +117,8 @@
         "lat": "41.49.41.5N",
         "lng": "71.24.43.8W",
         "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
         "languages": ["en-US", "es-CO"]
       }
     ],
