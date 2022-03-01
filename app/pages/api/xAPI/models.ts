@@ -36,12 +36,12 @@ export interface Group extends Agent{
 
 export interface SubStatement {
   objectType: string;
-  actor: Agent | Group | Activity;
+  actor: Agent | Group | Activity | string;
   verb: {
     id: string;
     display: {[key: string]: string};
   }
-  object: Agent | Group | Activity;
+  object: Agent | Group | Activity |string;
   result: Result | null;
   context: Context | null;
   timestamp: string | null;
@@ -84,16 +84,16 @@ export interface Context {
 }
 
 export interface Statement {
-  actor: Agent | Group | Activity;
+  actor: Agent | Group | Activity | string;
   verb: {
     id: string;
     display: {[key: string]: string};
   }
-  object: Agent | Group | Activity | SubStatement |StatementRef;
+  object: Agent | Group | Activity | SubStatement |StatementRef | string;
   result: Result | null;
   context: Context | null;
   timestamp: string | null;
   stored: string | null;
   version: string | null;
-  authority: Agent | Group | Activity | null;
+  authority: Agent | Group | Activity | null | string;
 };

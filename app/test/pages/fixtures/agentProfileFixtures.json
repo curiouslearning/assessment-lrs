@@ -4,7 +4,10 @@
       {
         "profileId": "testProfile01",
         "agent": {
-          "mbox": "eric@eric.gt"
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
         },
         "continent": "North-America",
         "country": "United Sates",
@@ -17,8 +20,7 @@
       },
       {
         "profileId": "testProfile02",
-        "agent": {
-          "mbox": "eric@eric.gt"
+        "agent": {"account":{"homePage": "curiouslearning.org","name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"}
         },
         "continent": "North-America",
         "country": "United Sates",
@@ -34,7 +36,10 @@
       {
         "profileId": "testProfile03",
         "agent": {
-          "mbox": "eric@eric.gt"
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
         },
         "continent": "North-America",
         "country": "United Sates",
@@ -51,11 +56,13 @@
     "profileIds": [{"profileId": "testProfile01"}, {"profileId": "testProfile02"}, {"profileId": "testProfile03"}]
   },
   "singleAgentProfile": {
-    "agent": {"mbox": "eric@eric.gt"},
+    "agent": {
+      "account":{"homePage": "curiouslearning.org","name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"}
+    },
     "profile": {
       "profileId": "testProfile01",
       "agent": {
-        "mbox": "eric@eric.gt"
+      "account":{"homePage": "curiouslearning.org","name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"}
       },
       "continent": "North-America",
       "country": "United Sates",
@@ -71,12 +78,17 @@
     "profileId": {"profileId": "testProfile01"}
   },
   "singleAgentCollection": {
-    "agent": {"mbox":"eric@eric.gt"},
+    "agent": {
+      "account":{"homePage": "curiouslearning.org","name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"}
+    },
     "profiles": [
       {
         "profileId": "testProfile01",
         "agent": {
-          "mbox": "eric@eric.gt"
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
         },
         "continent": "North-America",
         "country": "United Sates",
@@ -92,7 +104,10 @@
       {
         "profileId": "testProfile02",
         "agent": {
-          "mbox": "eric@eric.gt"
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
         },
         "continent": "North-America",
         "country": "United Sates",
@@ -108,7 +123,10 @@
       {
         "profileId": "testProfile03",
         "agent": {
-          "mbox": "eric@eric.gt"
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
         },
         "continent": "North-America",
         "country": "United Sates",
@@ -132,7 +150,10 @@
       {
         "profileId": "testProfile03",
         "agent": {
-          "mbox": "eric@eric.gt"
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
         },
         "continent": "North-America",
         "country": "United Sates",

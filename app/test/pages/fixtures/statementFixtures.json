@@ -722,8 +722,35 @@
           },
           "id": "9f81e0b0-4411-49e2-a4e3-5e6ed1944d7f",
           "timestamp": "2000-03-11T19:25:19.395Z"
-        }
-      ],
+        },
+        {
+          "actor": {
+              "objectType": "Agent",
+              "account": {
+                "homePage": "curiouslearning",
+                "name": "testUser"
+              }
+          },
+          "verb": {
+              "id": "http://adlnet.gov/expapi/verbs/answered",
+              "display": {
+                  "en-US": "answered"
+              }
+          },
+          "object": {
+              "id": "http://adlnet.gov/expapi/activities/example",
+              "definition": {
+                  "name": {
+                      "en-US": "Example Activity"
+                  },
+                  "description": {
+                      "en-US": "Example activity description"
+                  }
+              },
+              "objectType": "Activity"
+          }
+      }
+    ],
     "ids": []
   },
   "illegalStatementCollection": {

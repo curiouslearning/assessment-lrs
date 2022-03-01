@@ -22,32 +22,6 @@ enum FormatTypes {
   exact = "exact",
   canonical = "canonical",
 }
-type QueryParams = {
-  id: string;
-  actor: Agent | Group | Activity;
-  verb: string;
-  object: Agent | Group | Activity | StatementRef | Statement;
-  context: {
-    registration: string;
-  };
-  timestamp: any;
-  agent: {
-    objectType?: "Agent";
-    name?: string;
-    account: {
-      homepage: string;
-      name: string;
-    };
-  };
-};
-
-type QueryOptions = {
-  params: QueryParams;
-  limit: number;
-  sort: {[key:string]: number};
-  attachments: Array<string>;
-  format: string;
-}
 
 /********************************HELPER MIDDLEWARE*****************************/
 const cors = Cors({
@@ -76,9 +50,12 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse): Promise<any
   try {
     // await runMiddleware(req, res, sanitizeQueryParams);
     // await runMiddleware(req, res, cors);
+    const url = req.url? req.url : "";
+    const params = new URL(url, `http://${req.headers.host}`).searchParams;
+    const query = Object.fromEntries(params.entries());
     helpers.validateQueryParams(req, res, (err) => {if (err) throw err});
-    const queryOptions = generateQueryParams(req.query);
-    const statements = await statementsModel.all();
+    const queryOptions = generateQueryParams(query);
+    const statements = await statementsModel.getByParams(queryOptions);
     res.status(200).json({
       statements,
       more: "",
@@ -89,9 +66,9 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse): Promise<any
   }
 }
 
-function generateQueryParams(query: any = {}): QueryOptions {
-  let params = {} as QueryParams;
-  let options = {} as QueryOptions;
+function generateQueryParams(query: any = {}): statementsModel.QueryOptions {
+  let params = {} as statementsModel.QueryParams;
+  let options = {} as statementsModel.QueryOptions;
   if (query) {
     if (query.voidedStatmentId) {
       params["id"] = query.voidedStatmentId;
@@ -100,17 +77,14 @@ function generateQueryParams(query: any = {}): QueryOptions {
     }
 
     if (query.agent) {
-      params["actor"] = query.agent;
-      params["object"] = query.agent;
+      const id =  helpers.getIRI(JSON.parse(query.agent));
+      params["agent"] = id? id: "";
     }
     if (query.verb) {
       params["verb"] = query.verb;
     }
     if (query.activity) {
-      params["object"] = {
-        objectType: "Activity",
-        id: query.activity
-      }
+      params["activity"] = JSON.parse(query.activity)
     }
     if (query.registration) {
       params["context"]["registration"] = query.registration;
@@ -118,31 +92,28 @@ function generateQueryParams(query: any = {}): QueryOptions {
     //TODO: implement these related flags as described in the specification
     // github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#213-get-statements
     if (query.related_activities) {
-      params["object"] = {
-        objectType: "Activity",
-        id: query.activity
-      };
+      params["activity"] = JSON.parse(query.activity);
     }
     if (query.related_agents) {
-      params["actor"] = query.activity;
+      params["agent"] = JSON.parse(query.activity);
     }
 
     if (query.since && query.until && query.since < query.until) {
       params["timestamp"] = {
-        or: [{ $gte: query.since }, { $lte: query.until }],
+        or: [{ gte: query.since }, { lte: query.until }],
       };
     } else if (query.since) {
-      params["timestamp"] = { $gte: query.since };
+      params["timestamp"] = { gte: query.since };
     } else if (query.until) {
-      params["timestamp"] = { $lte: query.since };
+      params["timestamp"] = { lte: query.until};
     }
   }
-  options["limit"] = query.limit ? query.limit : 0;
+  options["limit"]= query.limit && query.limit > 0 ? parseInt(query.limit):1000;
   options["format"] = query.format ? query.format : "exact";
 
   options["attachments"] = query.attachments ? query.attachments : false;
   options["sort"] = {
-    stored: query.ascending ? 1 : -1,
+    stored: query.ascending ? 'asc' : 'desc',
   };
   options["params"] = params;
   return options;
@@ -165,6 +136,7 @@ async function addMultipleStatements(
 ): Promise<void> {}
 
 async function handlePOST(req: NextApiRequest, res: NextApiResponse): Promise<any> {
+  //TODO: REWRITE POST TO CREATE AGENTS, ACTIVITIES AND SUBSTATEMENT OBJECTS
   if (!req.body) {
     res.status(200).end();
   }

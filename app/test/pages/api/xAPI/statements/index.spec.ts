@@ -86,12 +86,74 @@ describe("[GET] /pages/api/statements", () => {
         delete res.body.statements[1]['id'];
         delete res.body.statements[1]['stored'];
         delete res.body.statements[2]['stored'];
+        delete res.body.statements[3]['id'];
+        delete res.body.statements[3]['stored'];
       })
       .expect({
         statements: statementCollection.statements,
         more: "",
       });
   });
+
+  it("returns 200 and a single statement", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements);
+    await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .query({statementId: "2ca05e3a-b571-48ea-b3b5-8d28216b3094"})
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect((res) => {
+        delete res.body.statements[0]['stored'];
+      })
+      .expect({
+        statements: [statementCollection.statements[0]],
+        more: "",
+      });
+  })
+
+  it("returns 200 and no statements", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements);
+    await testServer(handlers)
+      .get("/")
+      .auth(usr,pw)
+      .query({since: new Date(Date.now()).toISOString()})
+      .expect(200)
+      .expect({
+        statements: [],
+        more: ''
+      })
+  });
+
+  it("returns 200 and all statements", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements);
+    await testServer(handlers)
+      .get("/")
+      .auth(usr,pw)
+      .query({until: new Date(Date.now()).toISOString()})
+      .expect(200)
+      .expect((res) => {
+        delete res.body.statements[0]['stored'];
+        delete res.body.statements[1]['id'];
+        delete res.body.statements[1]['stored'];
+        delete res.body.statements[2]['stored'];
+        delete res.body.statements[3]['id'];
+        delete res.body.statements[3]['stored']
+      })
+      .expect({
+        statements: statementCollection.statements,
+        more: ''
+      })
+  })
 
   it("returns 200 and an empty statement array", async () => {
     await testServer(handlers)
@@ -104,6 +166,69 @@ describe("[GET] /pages/api/statements", () => {
         more: "",
       });
   });
+
+  it("returns 200 and the statement with the matching actor", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements)
+      .expect(200);
+
+    await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .query({
+        agent: JSON.stringify({mbox: "mailto:ev@picanufu.kp"})
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect((res) => {
+        delete res.body.statements[0]['stored']
+      })
+      .expect({
+        statements: [statementCollection.statements[0]],
+        more: ""
+      });
+  });
+
+  it("returns 200 at the statement with the matching object", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements)
+      .expect(200);
+    await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .query({activity: JSON.stringify({id: "http://adlnet.gov/expapi/activities/example"})})
+      .expect(200)
+      .expect(res => {
+        delete res.body.statements[0].stored
+        delete res.body.statements[0].id
+      })
+      .expect({
+        statements: [statementCollection.statements[3]],
+        more: ""
+      });
+  })
+
+  it("returns 200 and exactly two statements", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements)
+      .expect(200);
+    await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .query({
+        limit: 2
+      })
+      .expect(200)
+      .expect(res => {
+        res.body.statements.length === 2
+      });
+  })
 
   it("returns 400 when statementId and voidedStatementId are specified", async () => {
     await testServer(handlers)

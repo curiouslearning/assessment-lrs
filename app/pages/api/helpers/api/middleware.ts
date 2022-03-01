@@ -30,12 +30,12 @@ export default function middleware () {
           delete formattedAgent[prop]
         }
       });
-      if (formattedAgent.homepage && formattedAgent.name) {
+      if (formattedAgent.homePage && formattedAgent.name) {
         formattedAgent['account'] = {
-          homepage: formattedAgent.homepage,
+          homePage: formattedAgent.homePage,
           name: formattedAgent.name
         };
-        delete formattedAgent['homepage'];
+        delete formattedAgent['homePage'];
         delete formattedAgent['name'];
       }
       delete formattedAgent['id'];
@@ -98,7 +98,7 @@ export default function middleware () {
         return agent.openid
       }
       if (agent.account) {
-        return `${agent.account.homepage}/${agent.account.name}`;
+        return `${agent.account.homePage}/${agent.account.name}`;
       }
       if (agent.member) {
         if (agent.name) {

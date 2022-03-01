@@ -49,14 +49,14 @@ model AgentProfile {
 
 model Agent {
   id           String         @id @default(cuid())
-  homepage     String?
+  homePage     String?
   name         String?
   mbox         String?
   mbox_sha1sum String?
   openid       String?
   AgentProfile AgentProfile[]
 
-  @@unique([homepage, name, mbox, mbox_sha1sum, openid])
+  @@unique([homePage, name, mbox, mbox_sha1sum, openid])
 }
 
 model ActivityProfile {

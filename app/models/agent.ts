@@ -6,7 +6,7 @@ export interface FormattedAgent {
   openid: string;
   account: {
     name: string;
-    homepage: string;
+    homePage: string;
   };
 }
 
@@ -27,7 +27,7 @@ export async function findByAgent(agent: FormattedAgent) {
        mbox_sha1sum: agent.mbox_sha1sum? agent.mbox_sha1sum : "",
        openid: agent.openid? agent.openid : "",
        name: agent.account && agent.account.name? agent.account.name : "",
-       homepage: agent.account && agent.account.homepage? agent.account.homepage: ""
+       homePage: agent.account && agent.account.homePage? agent.account.homePage: ""
      }
    });
    return agentId
