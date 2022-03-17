@@ -86,7 +86,7 @@ describe("[GET] /pages/api/statements", () => {
         delete res.body.statements[1]['id'];
         delete res.body.statements[1]['stored'];
         delete res.body.statements[2]['stored'];
-        delete res.body.statements[3]['id'];
+        delete res.body.statements[3].id;
         delete res.body.statements[3]['stored'];
       })
       .expect({

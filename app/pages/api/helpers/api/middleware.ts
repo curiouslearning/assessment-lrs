@@ -134,9 +134,8 @@ export default function middleware () {
             }
           }
         }
-      next(req.query);
       } catch(err) {
-        next(err);
+        throw err;
       }
     }
   });

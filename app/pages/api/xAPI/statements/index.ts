@@ -56,7 +56,7 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse): Promise<any
     helpers.validateQueryParams(req, res, (err) => {if (err) throw err});
     const queryOptions = generateQueryParams(query);
     const statements = await statementsModel.getByParams(queryOptions);
-    res.status(200).json({
+    return res.status(200).json({
       statements,
       more: "",
     });
@@ -138,7 +138,7 @@ async function addMultipleStatements(
 async function handlePOST(req: NextApiRequest, res: NextApiResponse): Promise<any> {
   //TODO: REWRITE POST TO CREATE AGENTS, ACTIVITIES AND SUBSTATEMENT OBJECTS
   if (!req.body) {
-    res.status(200).end();
+    return res.status(200).end();
   }
   try {
     helpers.sanitizeBody(req, res, (err) => {
