@@ -1,0 +1,169 @@
+{
+  "profileCollection": {
+    "profiles": [
+      {
+        "profileId": "testProfile01",
+        "agent": {
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
+        },
+        "continent": "North-America",
+        "country": "United Sates",
+        "region": "Rhode Island",
+        "city": "Providence",
+        "lat": "41.49.41.5N",
+        "lng": "71.24.43.8W",
+        "referralId": "testCampaign",
+        "languages": ["en-US", "es-CO"]
+      },
+      {
+        "profileId": "testProfile02",
+        "agent": {"account":{"homePage": "curiouslearning.org","name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"}
+        },
+        "continent": "North-America",
+        "country": "United Sates",
+        "region": "Pennsylvania",
+        "city": "Philadelphia",
+        "lat": "41.49.41.5N",
+        "lng": "71.24.43.8W",
+        "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
+        "languages": ["en-US", "es-CO"]
+      },
+      {
+        "profileId": "testProfile03",
+        "agent": {
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
+        },
+        "continent": "North-America",
+        "country": "United Sates",
+        "region": "Massachusetts",
+        "city": "Boston",
+        "lat": "41.49.41.5N",
+        "lng": "71.24.43.8W",
+        "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
+        "languages": ["en-US", "es-CO"]
+      }
+    ],
+    "profileIds": [{"profileId": "testProfile01"}, {"profileId": "testProfile02"}, {"profileId": "testProfile03"}]
+  },
+  "singleAgentProfile": {
+    "agent": {
+      "account":{"homePage": "curiouslearning.org","name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"}
+    },
+    "profile": {
+      "profileId": "testProfile01",
+      "agent": {
+      "account":{"homePage": "curiouslearning.org","name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"}
+      },
+      "continent": "North-America",
+      "country": "United Sates",
+      "region": "Rhode Island",
+      "city": "Providence",
+      "lat": "41.49.41.5N",
+      "lng": "71.24.43.8W",
+      "referralId": "testCampaign",
+      "utmAttribution": "testAttr",
+      "organization": "cl-test",
+      "languages": ["en-US", "es-CO"]
+    },
+    "profileId": {"profileId": "testProfile01"}
+  },
+  "singleAgentCollection": {
+    "agent": {
+      "account":{"homePage": "curiouslearning.org","name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"}
+    },
+    "profiles": [
+      {
+        "profileId": "testProfile01",
+        "agent": {
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
+        },
+        "continent": "North-America",
+        "country": "United Sates",
+        "region": "Rhode Island",
+        "city": "Providence",
+        "lat": "41.49.41.5N",
+        "lng": "71.24.43.8W",
+        "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
+        "languages": ["en-US", "es-CO"]
+      },
+      {
+        "profileId": "testProfile02",
+        "agent": {
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
+        },
+        "continent": "North-America",
+        "country": "United Sates",
+        "region": "Pennsylvania",
+        "city": "Philadelphia",
+        "lat": "41.49.41.5N",
+        "lng": "71.24.43.8W",
+        "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
+        "languages": ["en-US", "es-CO"]
+      },
+      {
+        "profileId": "testProfile03",
+        "agent": {
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
+        },
+        "continent": "North-America",
+        "country": "United Sates",
+        "region": "Massachusetts",
+        "city": "Boston",
+        "lat": "41.49.41.5N",
+        "lng": "71.24.43.8W",
+        "referralId": "testCampaign",
+        "utmAttribution": "testAttr",
+        "organization": "cl-test",
+        "languages": ["en-US", "es-CO"]
+      }
+    ],
+    "profileIds": [{"profileId": "testProfile01"}, {"profileId": "testProfile02"}, {"profileId": "testProfile03"}],
+    "since": "2021-02-05T14:00:00z",
+    "filterCount": 5
+  },
+  "illegalProfile": {
+    "agent": {},
+    "profile":
+      {
+        "profileId": "testProfile03",
+        "agent": {
+          "account":{
+            "homePage": "curiouslearning.org",
+            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
+            }
+        },
+        "continent": "North-America",
+        "country": "United Sates",
+        "region": "Massachusetts",
+        "city": "Boston",
+        "lat": 41.49415,
+        "lng": "71.24.43.8W",
+        "referralId": "testCampaign",
+        "languages": ["en-US", "es-CO"]
+      },
+    "profileId": ""
+  }
+}
