@@ -212,6 +212,27 @@ describe("[GET] /pages/api/statements", () => {
       });
   })
 
+  it("returns 200 and statements with the matching verb", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements)
+      .expect(200);
+    await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .query({verb: "http://adlnet.gov/expapi/verbs/answered"})
+      .expect(200)
+      .expect(res => {
+        delete res.body.statements[0].stored
+        delete res.body.statements[0].id
+      })
+      .expect({
+        statements: [statementCollection.statements[3]],
+        more: ""
+      });
+  })
+
   it("returns 200 and exactly two statements", async () => {
     await testServer(handlers)
       .post("/")

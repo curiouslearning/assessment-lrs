@@ -35,3 +35,4 @@ secrets/
 keys/
 *.tsbuildinfo
 helm/values
+node_modules

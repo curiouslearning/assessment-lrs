@@ -10,22 +10,22 @@ import {
 import * as agentModel from './agent';
 
 export type QueryParams = {
-  id: string;
-  agent: Agent | Group | Activity | string;
-  verb: string;
-  activity: Agent | Group | Activity | StatementRef | Statement | string;
-  context: {
+  id?: string;
+  agent?: Agent | Group | Activity | string;
+  verb?: string;
+  activity?: Agent | Group | Activity | StatementRef | Statement | string;
+  context?: {
     registration: string;
   };
-  timestamp: any;
+  timestamp?: any;
 }
 
 export type QueryOptions = {
   params: QueryParams;
-  limit: number;
-  sort: {[key:string]: string};
-  attachments: Array<string>;
-  format: string;
+  limit?: number;
+  sort?: {[key:string]: string};
+  attachments?: Array<string>;
+  format?: string;
 }
 
 export type StatementSelect = Prisma.PromiseReturnType<typeof getByIDs>;
@@ -84,6 +84,9 @@ async function buildQueryObj (options: QueryOptions) {
     queryObj.where["context"] = {
       registration: queryObj.context.registration
     };
+  }
+  if (params.verb) {
+    queryObj.where["verbId"] = params.verb
   }
   if (params.timestamp) {
     queryObj.where["stored"] = params.timestamp;
