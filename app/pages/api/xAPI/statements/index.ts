@@ -87,7 +87,9 @@ function generateQueryParams(query: any = {}): statementsModel.QueryOptions {
       params["activity"] = JSON.parse(query.activity)
     }
     if (query.registration) {
-      params["context"]["registration"] = query.registration;
+      params["context"] = {
+        registration: query.registration
+      };
     }
     //TODO: implement these related flags as described in the specification
     // github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#213-get-statements
