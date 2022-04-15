@@ -6,7 +6,7 @@
     "start": "next start",
     "test": "nodemon --exec \"npm run test-ci\" --ext .ts --ignore node_modules",
     "migrate": "dotenv -- npx prisma migrate dev --name init",
-    "test-ci": "ts-mocha -p tsconfig.json test/**/*.spec.ts",
+    "test-ci": "ts-mocha -p tsconfig.json test/**/*.spec.ts && tsc",
     "migrate-ci": "dotenv -- prisma migrate dev"
   },
   "dependencies": {
