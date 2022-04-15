@@ -51,14 +51,20 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse): Promise<any
     // await runMiddleware(req, res, sanitizeQueryParams);
     // await runMiddleware(req, res, cors);
     const url = req.url? req.url : "";
-    const params = new URL(url, `http://${req.headers.host}`).searchParams;
+    let fullURL =  new URL(url, `http://${req.headers.host}`)
+    const params = fullURL.searchParams;
     const query = Object.fromEntries(params.entries());
     helpers.validateQueryParams(req, res, (err) => {if (err) throw err});
     const queryOptions = generateQueryParams(query);
     const statements = await statementsModel.getByParams(queryOptions);
+    let more = ""
+    if (statements.length === queryOptions.limit) { //more results likely exist
+      let cursor = statements[statements.length -1].id
+      more = `${fullURL}&cursor=${encodeURIComponent(cursor)}`;
+    }
     return res.status(200).json({
       statements,
-      more: "",
+      more,
     });
   } catch (err) {
     throw err;
@@ -66,6 +72,7 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse): Promise<any
   }
 }
 
+//TODO: Remove and merge this logic into the logic in /models/statements.ts
 function generateQueryParams(query: any = {}): statementsModel.QueryOptions {
   let params = {} as statementsModel.QueryParams;
   let options = {} as statementsModel.QueryOptions;
@@ -84,12 +91,10 @@ function generateQueryParams(query: any = {}): statementsModel.QueryOptions {
       params["verb"] = query.verb;
     }
     if (query.activity) {
-      params["activity"] = JSON.parse(query.activity)
+      params["activity"] = query.activity
     }
     if (query.registration) {
-      params["context"] = {
-        registration: query.registration
-      };
+      params["registration"] = query.registration
     }
     //TODO: implement these related flags as described in the specification
     // github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#213-get-statements
@@ -117,6 +122,10 @@ function generateQueryParams(query: any = {}): statementsModel.QueryOptions {
   options["sort"] = {
     stored: query.ascending ? 'asc' : 'desc',
   };
+
+  if(query.cursor) {
+    options["cursor"] = query.cursor;
+  }
   options["params"] = params;
   return options;
 }

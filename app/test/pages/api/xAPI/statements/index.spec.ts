@@ -1,7 +1,9 @@
+import sinon from 'sinon';
 import {
   illegalStatementCollection,
   singleStatement,
   statementCollection,
+  voidedStatementCollection
 } from "../../../fixtures/statementFixtures.json";
 import dbClient from "../../../../../lib/db";
 import handlers from "../../../../../pages/api/xAPI/statements/index";
@@ -83,11 +85,11 @@ describe("[GET] /pages/api/statements", () => {
       .expect(200)
       .expect((res) => {
         delete res.body.statements[0]['stored'];
-        delete res.body.statements[1]['id'];
         delete res.body.statements[1]['stored'];
         delete res.body.statements[2]['stored'];
-        delete res.body.statements[3].id;
+        delete res.body.statements[2]['id'];
         delete res.body.statements[3]['stored'];
+        delete res.body.statements[3]['id'];
       })
       .expect({
         statements: statementCollection.statements,
@@ -143,15 +145,15 @@ describe("[GET] /pages/api/statements", () => {
       .expect(200)
       .expect((res) => {
         delete res.body.statements[0]['stored'];
-        delete res.body.statements[1]['id'];
         delete res.body.statements[1]['stored'];
         delete res.body.statements[2]['stored'];
+        delete res.body.statements[2]['id'];
+        delete res.body.statements[3]['stored'];
         delete res.body.statements[3]['id'];
-        delete res.body.statements[3]['stored']
       })
       .expect({
         statements: statementCollection.statements,
-        more: ''
+        more: ""
       })
   })
 
@@ -191,7 +193,7 @@ describe("[GET] /pages/api/statements", () => {
       });
   });
 
-  it("returns 200 at the statement with the matching object", async () => {
+  it("returns 200 and the statement with the matching object", async () => {
     await testServer(handlers)
       .post("/")
       .auth(usr, pw)
@@ -200,7 +202,7 @@ describe("[GET] /pages/api/statements", () => {
     await testServer(handlers)
       .get("/")
       .auth(usr, pw)
-      .query({activity: JSON.stringify({id: "http://adlnet.gov/expapi/activities/example"})})
+      .query({activity: "http://adlnet.gov/expapi/activities/example"})
       .expect(200)
       .expect(res => {
         delete res.body.statements[0].stored
@@ -250,6 +252,73 @@ describe("[GET] /pages/api/statements", () => {
         res.body.statements.length === 2
       });
   })
+  it.skip("returns 200 and exactly one statement", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(voidedStatementCollection.statements)
+      .expect(200);
+
+    await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .expect(200)
+      .expect(res => {
+        delete res.body.statements[0].id;
+        delete res.body.statements[0].stored;
+      })
+      .expect({
+        statements: [voidedStatementCollection.statements[2]],
+        more: ""
+      })
+
+  })
+
+  it("returns 200 and the next set of data excluding the cursor", async () => {
+    function matchIfString(res: any) {
+      if(res.body.statements === statementCollection.statements.slice(0,2)) {
+        if (typeof res.more === "string" && res.more !== "")
+        {
+          return true
+        }
+      }
+      return false;
+    }
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(statementCollection.statements)
+      .expect(200)
+    const res = await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .query({limit: 2})
+      .expect(200)
+      .expect(res => {
+        delete res.body.statements[0]['stored'];
+        delete res.body.statements[1]['stored'];
+      })
+      .expect(matchIfString);
+
+    const params = "?" + res.body.more.split('?')[1];
+
+    await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .query(params)
+      .expect(200)
+      .expect(res=> {
+        delete res.body.statements[0]['stored'];
+        delete res.body.statements[0]['id'];
+        delete res.body.statements[1]['stored'];
+        delete res.body.statements[1]['id'];
+      })
+      .expect({
+        statements: statementCollection.statements.slice(2, 4),
+        more: ""
+      })
+
+  });
 
   it("returns 400 when statementId and voidedStatementId are specified", async () => {
     await testServer(handlers)
