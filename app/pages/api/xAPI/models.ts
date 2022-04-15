@@ -84,6 +84,7 @@ export interface Context {
 }
 
 export interface Statement {
+  id: string;
   actor: Agent | Group | Activity | string;
   verb: {
     id: string;

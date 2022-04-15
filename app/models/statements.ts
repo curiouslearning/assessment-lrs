@@ -14,9 +14,7 @@ export type QueryParams = {
   agent?: Agent | Group | Activity | string;
   verb?: string;
   activity?: Agent | Group | Activity | StatementRef | Statement | string;
-  context?: {
-    registration: string;
-  };
+  registration: string;
   timestamp?: any;
 }
 
@@ -26,6 +24,7 @@ export type QueryOptions = {
   sort?: {[key:string]: string};
   attachments?: Array<string>;
   format?: string;
+  cursor?: string;
 }
 
 export type StatementSelect = Prisma.PromiseReturnType<typeof getByIDs>;
@@ -52,19 +51,17 @@ export async function getByIDs(ids: string[]) {
   });
 }
 
-export async function getByParams(params: QueryOptions) {
+export async function getByParams(params: QueryOptions): Promise<Statement[]> {
   const queryObj = await buildQueryObj(params);
-  console.log(queryObj);
   const rows = await dbClient.statement.findMany(queryObj);
-  console.log(`found ${rows.length} rows`)
-  return rows.map(row => row.statement);
+  const statements = rows.map(row => row.statement) as unknown as Statement[];
+  return statements;
 }
 
 async function buildQueryObj (options: QueryOptions) {
   const params = options.params;
   let queryObj: any = {where: {}, select: {statement: true}};
   if (params.id) {
-    console.log("setting id");
     queryObj.where['id'] = params.id
   }
   if (params.agent) {
@@ -72,17 +69,16 @@ async function buildQueryObj (options: QueryOptions) {
       {actorId: await getIdentifierForObjectType(params.agent)},
       {objectId: await getIdentifierForObjectType(params.agent)}
     ];
-    console.log(queryObj.where.OR);
   }
   if (params.activity) {
     queryObj.where["OR"] =[
-      {actorId: await getIdentifierForObjectType(params.activity)},
-      {objectId: await getIdentifierForObjectType(params.activity)}
+      {actorId: params.activity},
+      {objectId: params.activity}
     ];
   }
-  if (params.context) {
+  if (params.registration) {
     queryObj.where["context"] = {
-      registration: queryObj.context.registration
+      registration: queryObj.registration
     };
   }
   if (params.verb) {
@@ -98,7 +94,17 @@ async function buildQueryObj (options: QueryOptions) {
     queryObj.select["attachments"] = options.attachments
   }
   if (options.sort) {
-    queryObj["orderBy"] = [options.sort]
+    queryObj["orderBy"] = [
+      {id: "asc"},
+      options.sort
+    ]
+  }
+
+  if (options.cursor) {
+    queryObj["cursor"] = {
+      id: options.cursor
+    }
+    queryObj["skip"] = 1
   }
   return queryObj
 }

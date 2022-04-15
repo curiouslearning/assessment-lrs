@@ -218,7 +218,7 @@ describe("[DELETE] /api/xAPI/agents/profile", () => {
     const {
       agent,
       since,
-    } = singleAgentProfile;
+    } = singleAgentProfile as any;
 
     await testServer(handlers)
       .delete("/")
