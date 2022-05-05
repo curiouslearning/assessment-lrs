@@ -25,7 +25,8 @@
     "synchronousWatchDirectory": true,
     "excludeDirectories": [
       "**/node_modules",
-      ".next"
+      ".next",
+      "app/test"
     ]
   },
   "include": [
@@ -34,6 +35,7 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "app/test"
   ]
 }
