@@ -77,7 +77,7 @@ export async function getAllForAgent(agent: FormattedAgent, since: string): Prom
           mbox_sha1sum: agent.mbox_sha1sum? agent.mbox_sha1sum : "",
           openid: agent.openid? agent.openid : "",
           name: agent.account? (agent.account.name? agent.account.name: "" ) : "",
-          homePage: agent.account? (agent.account.homePage? agent.account.homePage : "") : ""
+          homePage: agent.account? (agent.account.homePage? agent.account.homePage : undefined) : undefined
         }
       },
       stored: {
