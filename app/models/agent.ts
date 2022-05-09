@@ -16,7 +16,13 @@ export interface Group extends FormattedAgent {
 }
 
 export async function createAgent(agent: FormattedAgent) {
-  const id = await dbClient.agent.create({data: agent, select: { id: true }});
+  const id = await dbClient.agent.create({data: {
+    mbox: agent.mbox? agent.mbox : "",
+    mbox_sha1sum: agent.mbox_sha1sum? agent.mbox_sha1sum : "",
+    openid: agent.openid? agent.openid : "",
+    name: agent.account && agent.account.name? agent.account.name : "",
+    homePage: agent.account && agent.account.homePage? agent.account.homePage: ""
+  }, select: { id: true }});
   return id;
 }
 
