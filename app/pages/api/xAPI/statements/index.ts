@@ -107,7 +107,8 @@ function generateQueryParams(query: any = {}): statementsModel.QueryOptions {
 
     if (query.since && query.until && query.since < query.until) {
       params["timestamp"] = {
-        or: [{ gte: query.since }, { lte: query.until }],
+        gte: new Date(query.since),
+        lte: new Date(query.until)
       };
     } else if (query.since) {
       params["timestamp"] = { gte: query.since };
