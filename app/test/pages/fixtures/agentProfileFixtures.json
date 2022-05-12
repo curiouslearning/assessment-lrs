@@ -16,7 +16,7 @@
         "lat": "41.49.41.5N",
         "lng": "71.24.43.8W",
         "referralId": "testCampaign",
-        "languages": ["en-US", "es-CO"]
+        "language": "en-US"
       },
       {
         "profileId": "testProfile02",
@@ -31,7 +31,7 @@
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "languages": ["en-US", "es-CO"]
+        "language": "en-US"
       },
       {
         "profileId": "testProfile03",
@@ -50,7 +50,7 @@
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "languages": ["en-US", "es-CO"]
+        "language": "en-US"
       }
     ],
     "profileIds": [{"profileId": "testProfile01"}, {"profileId": "testProfile02"}, {"profileId": "testProfile03"}]
@@ -73,7 +73,7 @@
       "referralId": "testCampaign",
       "utmAttribution": "testAttr",
       "organization": "cl-test",
-      "languages": ["en-US", "es-CO"]
+      "language": "en-US"
     },
     "profileId": {"profileId": "testProfile01"}
   },
@@ -99,7 +99,7 @@
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "languages": ["en-US", "es-CO"]
+        "language": "en-US"
       },
       {
         "profileId": "testProfile02",
@@ -118,7 +118,7 @@
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "languages": ["en-US", "es-CO"]
+        "language": "en-US"
       },
       {
         "profileId": "testProfile03",
@@ -137,7 +137,7 @@
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "languages": ["en-US", "es-CO"]
+        "language": "en-US"
       }
     ],
     "profileIds": [{"profileId": "testProfile01"}, {"profileId": "testProfile02"}, {"profileId": "testProfile03"}],
@@ -162,7 +162,7 @@
         "lat": 41.49415,
         "lng": "71.24.43.8W",
         "referralId": "testCampaign",
-        "languages": ["en-US", "es-CO"]
+        "language": "en-US"
       },
     "profileId": ""
   }

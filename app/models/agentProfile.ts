@@ -14,7 +14,7 @@ export interface AgentProfile {
   referralId: string;
   utmAttribution: string;
   organization: string;
-  languages: string[];
+  language: string;
   stored: string;
 }
 
@@ -38,6 +38,7 @@ export async function add(profiles: AgentProfile[]) {
                   homePage: agent.account? (agent.account.homePage? agent.account.homePage : "") : ""
                 }
               }, create: {
+                agentName: agent.name? agent.name: "",
                 mbox: agent.mbox? agent.mbox : "",
                 mbox_sha1sum: agent.mbox_sha1sum? agent.mbox_sha1sum : "",
                 openid: agent.openid? agent.openid : "",
@@ -49,7 +50,7 @@ export async function add(profiles: AgentProfile[]) {
           continent: profile.continent,
           country: profile.country,
           region: profile.region,
-          languages: profile.languages,
+          language: profile.language,
           referralId: profile.referralId,
           utmAttribution: profile.utmAttribution,
           organization: profile.organization,
