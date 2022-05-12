@@ -1,5 +1,6 @@
 import dbClient from '../lib/db';
 export interface FormattedAgent {
+  name: string;
   objectType: string;
   mbox: string;
   mbox_sha1sum: string;
