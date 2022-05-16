@@ -25,6 +25,8 @@ export type QueryOptions = {
   attachments?: Array<string>;
   format?: string;
   cursor?: string;
+  relatedActivities?: boolean;
+  relatedAgents?: boolean;
 }
 
 export type StatementSelect = Prisma.PromiseReturnType<typeof getByIDs>;
@@ -71,14 +73,46 @@ async function buildQueryObj (options: QueryOptions) {
     ];
   }
   if (params.activity) {
-    queryObj.where["OR"] =[
-      {actorId: params.activity},
-      {objectId: params.activity}
-    ];
+    if (options.relatedActivities) {
+      const contextActivities = ["context", "contextActivities"];
+      const subStatement = ["object"];
+      const value = {id: params.activity}
+      const cases = [
+        {objectId: params.activity},
+        {statement: {
+          path: [...contextActivities, "grouping"],
+          array_contains: [value]
+        }}, {statement: { 
+          path: [...contextActivities, "parent"],
+          array_contains: [value]
+        }}, {statement:{
+          path: [...contextActivities, "other"],
+          array_contains: [value]
+        }},
+        {AND: [
+          { statement: {
+          path: [...subStatement, "objectType"],
+          equals : "SubStatement",
+          }},{ statement: {
+            path: [...subStatement, "object", "id"],
+            equals: value.id
+          }}
+        ]}
+      ]
+      if(!queryObj.where.OR) {
+        queryObj.where["OR"] = cases;
+      } else {
+        queryObj.where.OR  = [...queryObj.where.OR, ...cases]
+      }
+    } else {
+      queryObj.where["objectId"] = params.activity;
+    }
+
   }
   if (params.registration) {
-    queryObj.where["context"] = {
-      registration: queryObj.registration
+    queryObj.where["statement"] = {
+      path: ["context", "contextActivities", "registration"],
+      equals: queryObj.registration
     };
   }
   if (params.verb) {

@@ -3,7 +3,8 @@ import {
   illegalStatementCollection,
   singleStatement,
   statementCollection,
-  voidedStatementCollection
+  voidedStatementCollection,
+  relatedStatementCollection,
 } from "../../../fixtures/statementFixtures.json";
 import dbClient from "../../../../../lib/db";
 import handlers from "../../../../../pages/api/xAPI/statements/index";
@@ -273,6 +274,31 @@ describe("[GET] /pages/api/statements", () => {
       })
 
   })
+
+  it("returns 200 and all data referencing the activity id", async () => {
+    await testServer(handlers)
+      .post("/")
+      .auth(usr, pw)
+      .send(relatedStatementCollection.statements)
+      .expect(200);
+
+    await testServer(handlers)
+      .get("/")
+      .auth(usr, pw)
+      .query({activity: "https://data.curiouslearning.org/xAPI/activities/assessment/english/example", related_activities: true})
+      .expect(200)
+      .expect(res => {
+        res.body.statements.forEach((statement) => {
+          delete statement.id;
+          delete statement.stored;
+        })
+      })
+      .expect((res) => {
+        if(res.body.statements.length !== relatedStatementCollection.statements.length) {
+          throw new Error("Not all statements returned")
+        }
+      })
+  });
 
   it("returns 200 and the next set of data excluding the cursor", async () => {
     function matchIfString(res: any) {

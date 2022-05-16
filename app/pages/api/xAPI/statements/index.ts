@@ -98,9 +98,6 @@ function generateQueryParams(query: any = {}): statementsModel.QueryOptions {
     }
     //TODO: implement these related flags as described in the specification
     // github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#213-get-statements
-    if (query.related_activities) {
-      params["activity"] = JSON.parse(query.activity);
-    }
     if (query.related_agents) {
       params["agent"] = JSON.parse(query.activity);
     }
@@ -116,6 +113,8 @@ function generateQueryParams(query: any = {}): statementsModel.QueryOptions {
       params["timestamp"] = { lte: query.until};
     }
   }
+  options["relatedActivities"] = query.related_activities? query.related_activities : false;
+  options["relatedAgents"] = query.related_agents? query.related_agents : false;
   options["limit"]= query.limit && query.limit > 0 ? parseInt(query.limit):1000;
   options["format"] = query.format ? query.format : "exact";
 
