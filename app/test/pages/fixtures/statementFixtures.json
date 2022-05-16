@@ -2204,5 +2204,119 @@
             }
           }
         }]
+  }, 
+  "relatedStatementCollection" : {
+    "statements": [
+      {
+        "actor": {
+          "name": "actor-persistent-cookie", 
+          "account": {
+            "name": "actor-uuid",
+            "homePage": "cl-testing"
+          }
+        },
+        "verb": {
+          "id": "http://adlnet.gov/expapi/verbs/initialized"
+        },
+        "object": {
+          "id": "https://data.curiouslearning.org/xAPI/activities/assessment/english/example"
+        },
+        "context": {
+          "registration": "actor-session-id"
+        },
+        "timestamp": "2022-05-01T15:01:00Z"
+      },
+      {
+        "actor": {
+          "name": "actor-persistent-cookie", 
+          "account": {
+            "name": "actor-uuid",
+            "homePage": "cl-testing"
+          }
+        },
+        "verb": {
+          "id": "http://adlnet.gov/expapi/verbs/completed"
+        },
+        "object": {
+          "id": "https://data.curiouslearning.org/xAPI/activities/assessment/english/example"
+        },
+        "context": {
+          "registration": "actor-session-id"
+        },
+        "result": {
+          "score": {
+            "raw": 1,
+            "max": 100,
+            "scaled": 100
+          },
+          "completion": true,
+          "success": true
+        },
+        "timestamp": "2022-05-01T15:05:00Z"
+      },
+      {
+        "actor": {
+          "name": "actor-persistent-cookie", 
+          "account": {
+            "name": "actor-uuid",
+            "homePage": "cl-testing"
+          }
+        },
+        "verb": {
+          "id": "http://adlnet.gov/expapi/verbs/answered"
+        },
+        "object": {
+          "id": "https://data.curiouslearning.org/xAPI/activities/assessment/english/example/question/1"
+        },
+        "context": {
+          "registration": "actor-session-id",
+          "contextActivities": {
+            "parent": [{"id": "https://data.curiouslearning.org/activities/xAPI/assessment/english/example/bucket/1"}],
+            "grouping": [{"id": "https://data.curiouslearning.org/xAPI/activities/assessment/english/example"}]
+          }
+        },
+        "result": {
+          "score": {
+            "raw": 1,
+            "max": 1,
+            "scaled": 100
+          },
+          "completion": false,
+          "success": true
+        },
+        "timestamp": "2022-05-01T15:02:00Z"
+      },
+      {
+        "actor": {
+          "name": "actor-persistent-cookie", 
+          "account": {
+            "name": "actor-uuid",
+            "homePage": "cl-testing"
+          }
+        },
+        "verb": {
+          "id": "http://adlnet.gov/expapi/verbs/completed"
+        },
+        "object": {
+          "objectType": "SubStatement",
+          "actor": {
+            "name": "actor-persistent-cookie", 
+            "account": {
+              "name": "actor-uuid",
+              "homePage": "cl-testing"
+            }
+          },
+          "verb": {
+            "id": "http://adlnet.gov/expapi/verbs/completed"
+          },
+          "object": {
+            "id": "https://data.curiouslearning.org/xAPI/activities/assessment/english/example"
+          }
+        },
+        "context": {
+          "registration": "actor-session-id"
+        },
+        "timestamp": "2022-05-01T15:03:00Z"
+      }    ]
   }
 }
