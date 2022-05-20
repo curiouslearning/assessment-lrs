@@ -96,7 +96,9 @@ export async function getServerSideProps() {
          do {
             rows = await statements.getByParams(queryOptions);
             results = [...results, ...rows];
-            queryOptions.cursor = rows[rows.length - 1].id;
+            if(rows.length > 0 && rows[rows.length-1]) {
+                queryOptions.cursor = rows[rows.length - 1].id;
+            }
          } while (rows.length === 1000 )
         return results;
     }
