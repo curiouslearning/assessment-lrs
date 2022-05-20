@@ -4,12 +4,29 @@ import * as statements from '../../models/statements';
 import { Activity, Statement } from '../api/xAPI/models';
 
 export default function ProjectHealthDashboard (props: {[key:string]: Statement[]}) {
-    const {
-        startEvents,
-        terminateEvents,
-        completeEvents,
-        anonymousUsers
-    } = props;
+    const data = {
+        startEvents: props.startEvents,
+        terminateEvents: props.terminateEvents,
+        completeEvents: props.completeEvents,
+        anonymousUsers: props.anonymousUsers
+    };
+    const [startEvents, setStartEvents] = useState<Statement[]>([]);
+    const [terminateEvents, setTerminateEvents] = useState<Statement[]>([])
+    const [completeEvents, setCompleteEvents] = useState<Statement[]>([])
+    const [anonymousUsers, setAnonymousUsers] = useState<Statement[]>([])
+
+    useEffect(() => {
+        setStartEvents(data.startEvents);
+    }, [data.startEvents])
+    useEffect(() => {
+        setTerminateEvents(data.terminateEvents)
+    }, [data.terminateEvents])
+    useEffect(()=>{
+        setCompleteEvents(data.completeEvents);
+    }, [data.completeEvents])
+    useEffect(()=> {
+        setAnonymousUsers(data.anonymousUsers);
+    }, [data.anonymousUsers])
     const [globalFilter, setGlobalFilter] = useState("");
 
     const setGlobalOptions = (eventList: Statement[]) => {
@@ -81,7 +98,7 @@ export default function ProjectHealthDashboard (props: {[key:string]: Statement[
 
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context: any) {
     const DAY_IN_MS = 864000000;
     const timestamp = new Date(Date.now() - DAY_IN_MS).toISOString();
     const fetchEvents = async (timestamp: string, verb: string) => {
