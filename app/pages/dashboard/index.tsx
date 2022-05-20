@@ -74,10 +74,6 @@ export default function ProjectHealthDashboard (props: {[key:string]: Statement[
                             filter= {globalFilter}
                         />
                     <div className="columns">
-                        <div className="column my-4 is-flex is-flex-direction-column is-align-items-center"> <select value={globalFilter} onChange={(e) => setGlobalFilter(e.currentTarget.value)}>
-                                {setGlobalOptions([...startEvents, ...terminateEvents, ...completeEvents])}
-                            </select>
-                        </div>
 
                     </div>
                     </div>
@@ -92,6 +88,12 @@ export default function ProjectHealthDashboard (props: {[key:string]: Statement[
 
                 </div>
             </div>
+        <div className="column my-4 is-flex is-flex-direction-column is-align-items-center">
+            <select value={globalFilter} onChange={(e) => setGlobalFilter(e.currentTarget.value)}>
+                {setGlobalOptions([...startEvents, ...terminateEvents, ...completeEvents])}
+            </select>
+        </div>
+
         </div>
         </div>
     )
