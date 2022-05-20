@@ -181,7 +181,7 @@ Currently, the API has the following support for this resource:
         - verb: implemented
         - activity: implemented
         - registrtion: implemented
-        - related_activities: NOT implemented
+        - related_activities: implemented
         - related_ agents: NOT implemented
         - since: implemented
         - until: implemented
@@ -270,7 +270,7 @@ The LRS is designed to be hosted on a Kubernetes Cluster. Although this is not s
 ### Deploy to a Kubernetes Cluster
 
 
-1. in the top level directory `/helm` create a folder named `/values` (this directory is gitignored).
+1. in the top level directory `/helm` (of your local repository) create a folder named `/values` (this directory is gitignored).
 2. in `/values` create a file called `prod.yaml`. 
 3. Add the following text to `prod.yaml`, substituting production environment data for `{variables}`:
     ```
@@ -310,7 +310,8 @@ The LRS is designed to be hosted on a Kubernetes Cluster. Although this is not s
 
     **Notes:**
 
-    -  The ingress resource requires an [nginx ingress controller](https://kubernetes.github.io/ingress-nginx/) be present on the production cluser.
+    - The value of `env.secret.DATABASE_URL` is a sensitive piece of production data, DO NOT commit it to this repository under any circumstances.
+    - The ingress resource requires an [nginx ingress controller](https://kubernetes.github.io/ingress-nginx/) be present on the production cluser.
     - This setup assumes the container build is publicly accessible. If credentials are required to access the build, ensure they are stored in a [secret resource](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry) on the production cluster and declared in `prod.yaml` under `imagePullSecrets`. 
     - the value of `tag` MUST correspond to a build present at the container repo (e.g. If the tag is `1.1.2`, there MUST be a build named `assessment-lrs-1.1.2` at the repo specified in `repository`)
     - the version number MUST change between deployments for the deployment to update. To always update on an install regardless of tag, set the `pullPolicy` to `Always` (not recommended for production).
@@ -329,7 +330,7 @@ The LRS is designed to be hosted on a Kubernetes Cluster. Although this is not s
 ### Other Deployment Methods
 
 If deploying to an environment other than a kubernetes cluster, ensure the following values are defined:
-- `DATABASE_URL` environment variable is set to the production database's connection string
+- `DATABASE_URL` environment variable is set to the production database's connection string (**NEVER** expose this value publicly)
 
 To make a production build run the following commands:
 - `npx prisma migrate deploy`
