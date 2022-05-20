@@ -58,7 +58,7 @@ export default function ProjectHealthDashboard (props: {[key:string]: Statement[
                         />
                     <div className="columns">
                         <div className="column my-4 is-flex is-flex-direction-column is-align-items-center"> <select value={globalFilter} onChange={(e) => setGlobalFilter(e.currentTarget.value)}>
-                                {setGlobalOptions([...startEvents, ...terminateEvents, ...completeEvents, ...anonymousUsers])}
+                                {setGlobalOptions([...startEvents, ...terminateEvents, ...completeEvents])}
                             </select>
                         </div>
 
@@ -102,8 +102,15 @@ export async function getServerSideProps() {
     }
     const startEvents =  await fetchEvents(timestamp, "http://adlnet.gov/expapi/verbs/initialized");
     const terminateEvents = await fetchEvents(timestamp, "http://adlnet.gov/expapi/verbs/terminated")
-    const completeEvents =  await fetchEvents(timestamp, "http://adlnet.gov/expapi/verbs/completed")
-    const anonymousUsers= startEvents.filter(statement=> statement.actor.account && statement.actor.account.name === "anonymous")
+    let completeEvents =  await fetchEvents(timestamp, "http://adlnet.gov/expapi/verbs/completed")
+    completeEvents = completeEvents.filter(statement=> {
+        const castObject = statement.object as Activity;
+        return castObject.id.indexOf("bucket") === -1 //bucket completed events are deprecated and throw off our metrics
+    })
+    const anonymousUsers= startEvents.filter(
+        statement=> statement.actor.account &&
+            statement.actor.account.name === "anonymous"
+    )
     return {props:{
         startEvents,
         terminateEvents,
