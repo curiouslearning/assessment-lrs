@@ -99,12 +99,12 @@ export default function ProjectHealthDashboard (props: {[key:string]: Statement[
 }
 
 export async function getServerSideProps(context: any) {
-    const DAY_IN_MS = 864000000;
+    const DAY_IN_MS = 86400000;
     const timestamp = new Date(Date.now() - DAY_IN_MS).toISOString();
     const fetchEvents = async (timestamp: string, verb: string) => {
         let queryOptions: statements.QueryOptions = {
             params: {
-                timestamp,
+                timestamp: {gte: timestamp},
                 verb
             },
         }
