@@ -36,7 +36,7 @@ export interface Group extends Agent{
 
 export interface SubStatement {
   objectType: string;
-  actor: Agent | Group | Activity | string;
+  actor: Agent | Group;
   verb: {
     id: string;
     display: {[key: string]: string};
@@ -85,16 +85,16 @@ export interface Context {
 
 export interface Statement {
   id: string;
-  actor: Agent | Group | Activity | string;
+  actor: Agent | Group;
   verb: {
     id: string;
     display: {[key: string]: string};
   }
-  object: Agent | Group | Activity | SubStatement |StatementRef | string;
+  object: Agent | Group | Activity | SubStatement | StatementRef ;
   result: Result | null;
   context: Context | null;
   timestamp: string | null;
   stored: string | null;
   version: string | null;
-  authority: Agent | Group | Activity | null | string;
+  authority: Agent | Group | Activity | null ;
 };

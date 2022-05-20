@@ -14,7 +14,7 @@ export type QueryParams = {
   agent?: Agent | Group | Activity | string;
   verb?: string;
   activity?: Agent | Group | Activity | StatementRef | Statement | string;
-  registration: string;
+  registration?: string;
   timestamp?: any;
 }
 
