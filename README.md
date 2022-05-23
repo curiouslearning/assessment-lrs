@@ -191,6 +191,21 @@ Currently, the API has the following support for this resource:
         - ascending: implemented
 - Alternate Request Syntax: NOT implemented
 
+#### Example Queries
+
+- Fetch all data between May 1st and May 6th 2022, exclusive: 
+`https://{hostname}/api/xAPI/statements?since=2022-05-21&until=2022-06-21`
+- Fetch all statements related to a certain agent:
+`https://{hostname}/api/xAPI/statements?agent={"account":{"name":"johnSmith","homePage":"www.example.com"}}`
+- Fetch all statements whose object is a certain assessment:
+`https://{hostname}/api/xAPI/statements?activity=https://data.curiouslearning.org/xAPI/activities/assessment/english/example`
+- Fetch all statements that are related to the given activity:
+`https://{hostname}/api/xAPI/statements?activity=https://data.curiouslearning.org/xAPI/activities/assessment/english/example&related_activities=true`
+- Fetch all statements with a given verb:
+`https://{hostname}/api/xAPI/statements?verb=http://adlnet.gov/expapi/answered`
+- Compound query, fetch all "answered" statements for a given agent on a given assessment within a 24 hour period:
+`https://{hostname}/api/xAPI/statements?agent={"account":{"name":"johnSmith", "homePage": "www.example.com"}}&verb=http://adlnet.gov/expapi/verbs/answered&activity=https://data.curiouslearning.org/xAPI/activities/assessment/english/example&related_activities=true&since=2022-05-01&until=2022-05-02`
+
 <br>
 
 ### api/xAPI/agents/profile
@@ -220,6 +235,18 @@ Currently, the API has the following support for this resource:
         - profileId (string): REQUIRED 
     - Returns: `204`
     - STATUS: NOT implemented
+
+#### Example Queries
+
+- Fetch all profiles associated with the given agent:
+`https://{hostname}/api/xAPI/agents/profile?agent={"mbox": "john.smith@example.com}`
+    - returns: a list of profile ids
+- Fetch all profiles for an agent generated after a given timestamp:
+`https://{hostname}/api/xAPI/agents/profile?agent={"mbox": "john.smith@example.com}&since=2022-05-01T13:01:00.000Z`
+    - returns: a list of profile ids
+- Fetch the profile that matches the given agent and id
+`https://{hostname}/api/xAPI/agents/profile?agent={"mbox": "john.smith@example.com}&profileId=c12395gsagy7`
+    - returns: a single profile, represented by a JSON object
 
 <br>
 
