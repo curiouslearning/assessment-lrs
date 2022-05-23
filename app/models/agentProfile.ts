@@ -16,9 +16,11 @@ export interface AgentProfile {
   organization: string;
   language: string;
   stored: string;
+  extendedProfile: {[key: string]: any}
 }
 
 export type AgentProfileInclude = Prisma.PromiseReturnType<typeof getProfile>;
+
 export async function add(profiles: AgentProfile[]) {
   const inserts = await dbClient.$transaction(
     profiles.map((profile) => {
@@ -57,6 +59,7 @@ export async function add(profiles: AgentProfile[]) {
           city: profile.city,
           lat: profile.lat,
           lng: profile.lng,
+          extendedProfile: profile.extendedProfile
         },
         include: {agent: true}
       });

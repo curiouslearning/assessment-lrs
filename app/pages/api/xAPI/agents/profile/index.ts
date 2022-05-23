@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import deepEqual from "deep-equal";
+import { omit } from 'lodash';
 import { apiHandler } from "../../../helpers/api/api-handler";
 import middleware, { Next } from "../../../helpers/api/middleware";
 import * as model from "../../../../../models/agentProfile";
@@ -17,7 +17,29 @@ import {
 import { Prisma } from "@prisma/client";
 
 const helpers = middleware();
-
+function formatProfile (profile: {[key: string]: any}) {
+  if(!profile.agent || !helpers.validateBody(profile.agent)) {
+    throw `profile ${profile.profileId} is missing an Agent`
+  }
+  let datum = {
+    profileId: profile.profileId,
+    agent: profile.agent,
+    continent: profile.continent,
+    country: profile.country,
+    region: profile.region,
+    city: profile.city,
+    referralId: profile.referralId,
+    utmAttribution: profile.utmAttribution,
+    organization: profile.organization,
+    language: profile.language,
+    lat: profile.lat.slice(0, profile.lat.indexOf('.')+3), //only save last 2 decimal places of lat/lng for anonymity
+    lng: profile.lng.slice(0, profile.lng.indexOf('.') + 3),
+    extendedProfile: {}
+  };
+  const extendedProfile = omit(profile, Object.keys(datum));
+  datum.extendedProfile = extendedProfile;
+  return datum;
+}
 async function handleGET(req: NextApiRequest, res: NextApiResponse) {
   try {
     if(!req.url || !req.headers || !req.headers.host) throw 'improper url in request headers';
@@ -32,10 +54,15 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
     }
     if (query.profileId) {
       const profile = await model.getProfile(agent, query.profileId);
+      let retVal = {};
       if (profile) {
         profile.agent = helpers.formatAgentToXapi(profile.agent);
+        retVal = {
+          ...omit(profile, ["extendedProfile"]),
+          ...profile.extendedProfile as {[key: string]: any}
+        }
       }
-      return res.status(200).json(profile);
+      return res.status(200).json(retVal);
     } else {
       const idList = await model.getAllForAgent(agent, query.since);
       console.log(`idList: ${idList}`)
@@ -52,40 +79,42 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   }
   try {
     if(helpers.validateBody(req.body)) {
-      if(!Array.isArray(req.body)) {
-        await model.add([req.body])
-      } else {
-        await model.add(req.body);
+      let postBody: {[key: string]: any} = req.body as {[key: string]: any}
+      if(!Array.isArray(postBody)) {
+        postBody = [postBody];
       }
+      const data = postBody.map((profile: {[key: string]: any}) => {return formatProfile(profile)});
+      await model.add(data);
     } else {
       throw "invalid request body";
     }
     return res.status(204).end();
   } catch(err) {
+    console.error(err);
     if (err instanceof Prisma.PrismaClientValidationError) {
-      console.error(err);
       throw "invalid profile in request body";
     }
     throw err;
   }
 }
-
 async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
   if (!req.body) {
     return res.status(204).end();
   }
   try {
     if (helpers.validateBody(req.body)) {
-      if(!Array.isArray(req.body)) {
-        await model.add([req.body])
-      } else {
-        await model.add(req.body);
+      let putBody = req.body;
+      if(!Array.isArray(putBody)) {
+        putBody = [putBody];
       }
+      const data = putBody.map((profile:{[key: string]: any})=> {return formatProfile(profile)});
+      await model.add(data);
     } else {
       throw "invalid request body";
     }
     return res.status(204).send({});
   } catch(err) {
+    console.error(err);
     if (err instanceof Prisma.PrismaClientValidationError) {
       throw "invalid profile in request body";
     }

@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import querystring from 'querystring'
 import crypto from 'crypto'
 import { FormattedAgent, Group } from '../../../../models/agent';
 
@@ -21,8 +20,8 @@ export default function middleware () {
       res: NextApiResponse,
       next: Next
     ): void => {
-
     },
+
     formatAgentToXapi: (agent: any): any => {
       const formattedAgent = agent;
       Object.keys(formattedAgent).forEach((prop) => {

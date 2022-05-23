@@ -13,10 +13,11 @@
         "country": "United Sates",
         "region": "Rhode Island",
         "city": "Providence",
-        "lat": "41.49.41.5N",
-        "lng": "71.24.43.8W",
+        "lat": "41.4941",
+        "lng": "71.2443",
         "referralId": "testCampaign",
-        "language": "en-US"
+        "language": "en-US",
+        "version": "35.3.1"
       },
       {
         "profileId": "testProfile02",
@@ -26,8 +27,8 @@
         "country": "United Sates",
         "region": "Pennsylvania",
         "city": "Philadelphia",
-        "lat": "41.49.41.5N",
-        "lng": "71.24.43.8W",
+        "lat": "41.4941",
+        "lng": "71.2443",
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
@@ -45,12 +46,13 @@
         "country": "United Sates",
         "region": "Massachusetts",
         "city": "Boston",
-        "lat": "41.49.41.5N",
-        "lng": "71.24.43.8W",
+        "lat": "41.4941",
+        "lng": "71.2443",
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "language": "en-US"
+        "language": "en-US",
+        "version": "35.3.1"
       }
     ],
     "profileIds": [{"profileId": "testProfile01"}, {"profileId": "testProfile02"}, {"profileId": "testProfile03"}]
@@ -68,12 +70,13 @@
       "country": "United Sates",
       "region": "Rhode Island",
       "city": "Providence",
-      "lat": "41.49.41.5N",
-      "lng": "71.24.43.8W",
+      "lat": "41.4941",
+      "lng": "71.2443",
       "referralId": "testCampaign",
       "utmAttribution": "testAttr",
       "organization": "cl-test",
-      "language": "en-US"
+      "language": "en-US",
+      "version": "35.3.1"
     },
     "profileId": {"profileId": "testProfile01"}
   },
@@ -94,12 +97,13 @@
         "country": "United Sates",
         "region": "Rhode Island",
         "city": "Providence",
-        "lat": "41.49.41.5N",
-        "lng": "71.24.43.8W",
+        "lat": "41.4941",
+        "lng": "71.2443",
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "language": "en-US"
+        "language": "en-US",
+        "version": "35.3.1"
       },
       {
         "profileId": "testProfile02",
@@ -113,12 +117,13 @@
         "country": "United Sates",
         "region": "Pennsylvania",
         "city": "Philadelphia",
-        "lat": "41.49.41.5N",
-        "lng": "71.24.43.8W",
+        "lat": "41.4941",
+        "lng": "71.2443",
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "language": "en-US"
+        "language": "en-US",
+        "version": "35.3.1"
       },
       {
         "profileId": "testProfile03",
@@ -132,13 +137,14 @@
         "country": "United Sates",
         "region": "Massachusetts",
         "city": "Boston",
-        "lat": "41.49.41.5N",
-        "lng": "71.24.43.8W",
+        "lat": "41.4941",
+        "lng": "71.2443",
         "referralId": "testCampaign",
         "utmAttribution": "testAttr",
         "organization": "cl-test",
-        "language": "en-US"
-      }
+        "language": "en-US",
+          "version": "35.3.1"
+        }
     ],
     "profileIds": [{"profileId": "testProfile01"}, {"profileId": "testProfile02"}, {"profileId": "testProfile03"}],
     "since": "2021-02-05T14:00:00z",
@@ -149,18 +155,13 @@
     "profile":
       {
         "profileId": "testProfile03",
-        "agent": {
-          "account":{
-            "homePage": "curiouslearning.org",
-            "name": "bd7bcfb02a10bdd0df7d2b02974d79c7251bf06a9a6b4104d5beef39939e7cb8"
-            }
-        },
+        "agent": {},
         "continent": "North-America",
         "country": "United Sates",
         "region": "Massachusetts",
         "city": "Boston",
-        "lat": 41.49415,
-        "lng": "71.24.43.8W",
+        "lat": "41.49415",
+        "lng": "71.2443",
         "referralId": "testCampaign",
         "language": "en-US"
       },

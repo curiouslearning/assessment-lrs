@@ -108,6 +108,11 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
       profileId
     } = singleAgentProfile;
 
+    const formatExpected = (obj) => {
+      obj.lat = obj.lat.slice(0, obj.lat.indexOf('.') + 3)
+      obj.lng = obj.lng.slice(0, obj.lng.indexOf('.') + 3)
+      return obj
+    };
     await testServer(handlers)
       .post("/")
       .auth(usr, pw)
@@ -124,7 +129,7 @@ describe("[GET] /api/xAPI/agents/profile", async () => {
         delete res.body['objectType'];
         delete res.body['agentId'];
         return res;
-      }).expect(profile)
+      }).expect(formatExpected(profile))
       .expect(200);
   });
 
