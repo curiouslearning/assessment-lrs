@@ -303,7 +303,7 @@ The LRS is designed to be hosted on a Kubernetes Cluster. Although this is not s
     ```
     env:
     secret:
-        DATABASE_URL:  {Database Connection String}
+        DATABASE_URL:  {percent encoded Database Connection String}
     initialDelaySeconds: 30
 
     image:
@@ -337,7 +337,8 @@ The LRS is designed to be hosted on a Kubernetes Cluster. Although this is not s
 
     **Notes:**
 
-    - The value of `env.secret.DATABASE_URL` is a sensitive piece of production data, DO NOT commit it to this repository under any circumstances.
+    - The value of `env.secret.DATABASE_URL` is a sensitive piece of production data, DO NOT commit it to this repository under any circumstances. You can check the format [here](https://www.prisma.io/docs/concepts/database-connectors/postgresql)
+        - additionally, if the username or password in the DB connection string has any special characters ('*', '@', '$', '#' etc.) those characters must be percent encoded in the connection string
     - The ingress resource requires an [nginx ingress controller](https://kubernetes.github.io/ingress-nginx/) be present on the production cluser.
     - This setup assumes the container build is publicly accessible. If credentials are required to access the build, ensure they are stored in a [secret resource](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry) on the production cluster and declared in `prod.yaml` under `imagePullSecrets`. 
     - the value of `tag` MUST correspond to a build present at the container repo (e.g. If the tag is `1.1.2`, there MUST be a build named `assessment-lrs-1.1.2` at the repo specified in `repository`)
